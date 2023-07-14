@@ -7,23 +7,24 @@
 
 #include <iostream>
 
-class AVLTree {
+class Node {
 
 public:
-    struct Node{
-        int key_;
-        int value_;
-        Node* left_;
-        Node* right_;
-        int height_;
-    };
+    Node(int key, int value);
+    int GetHeight(Node* node);
+    int GetBalance(Node* node);
 
-    AVLTree();
-    void Insert(int key, int value);
 
 private:
-    Node* root_;
-    Node* CreateNode(int value, int key);
+    int key_;
+    int value_;
+    Node* left_;
+    Node* right_;
+    int height_;
+
+    void UpdateHeight(Node* node);
+    void Swap(Node* a, Node* b);
+    void RightRotate(Node *node);
 
 };
 

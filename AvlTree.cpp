@@ -4,27 +4,35 @@
 
 #include "AvlTree.h"
 
-// Constructor
-
-AVLTree::AVLTree() : root_(nullptr) {}
-
-// Creation
-
-void AVLTree::Insert(int key, int value) {
-    root_ = InsertNode(root_, key, value);
-}
-
-AVLTree::Node* AVLTree::CreateNode(int value, int key) {
-    Node* new_node = new Node();
-    new_node->key_ = key;
-    new_node->value_ = value;
-    new_node->left_ = nullptr;
-    new_node->right_ = nullptr;
-    new_node->height_ = 0;
-}
-
-//
-
 int main() {
     std::cout << 2;
+}
+
+Node::Node(int key, int value) {
+    key_ = key;
+    value_ = value;
+}
+
+int Node::GetHeight(Node* node) {
+    return node == nullptr ? -1:node->height_;
+}
+
+void Node::UpdateHeight(Node *node) {
+    node->height_ = std::max(GetHeight(node->left_), GetHeight(node->right_)) + 1;
+}
+
+int Node::GetBalance(Node *node) {
+    return node == nullptr ? 0 : GetHeight(node->right_) - GetHeight(node->right_);
+}
+
+void Node::Swap(Node *a, Node *b) {
+    std::swap(a->key_, b->key_);
+    std::swap(a->value_, b->value_);
+}
+
+void Node::RightRotate(Node *node) {
+    Swap(node, node->left_);
+    Node temp = node->right_; // copy constructor or move;
+
+
 }
