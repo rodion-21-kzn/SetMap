@@ -6,10 +6,26 @@
 
 int main() {
     AVLTree new_tree;
-    int key = 1, value = 1;
-    for (int i = 0; i < 17; i++)
-        new_tree.Insert(key++,value++);
-    std::cout << 1;
+
+//    new_tree.Insert(2,2);
+//    new_tree.Insert(3,3);
+//    new_tree.Insert(4,4);
+    new_tree.Insert(20,20);
+    new_tree.Insert(29,29);
+    new_tree.Insert(72,72);
+    new_tree.Insert(11,11);
+    new_tree.Insert(50,50);
+    new_tree.Insert(65,65);
+    new_tree.Insert(41,41);
+    new_tree.Insert(33,33);
+
+    new_tree.Insert(32,32);
+
+    new_tree.Insert(99,99);
+    new_tree.Insert(91,91);
+
+
+    new_tree.PrintBinaryTree();
 }
 
 // Contructors
@@ -38,24 +54,27 @@ void AVLTree::Swap(AVLTree::Node *a, AVLTree::Node *b) {
 }
 
 void AVLTree::RightRotate(AVLTree::Node *node) {
+    Node * new_left = node->left_->left_;
+    Node * new_right_right = node->right_;
+    Node * new_right_left = node->left_->right_;
     Swap(node, node->left_);
-    Node* tmp = node->right_;
     node->right_ = node->left_;
-    node->left_ = node->right_->left_;
-    node->right_->left_ = node->right_->right_;
-    node->right_->right_ = tmp;
+    node->left_ = new_left;
+    node->right_->left_ = new_right_left;
+    node->right_->right_ = new_right_right;
     SetHeight(node->right_);
-    SetHeight(node->left_);
+    SetHeight(node);
 }
 
 void AVLTree::LeftRotate(AVLTree::Node *node) {
+    Node * new_right = node->right_->right_;
+    Node * new_left_left = node->left_;
+    Node * new_left_right = node->right_->left_;
     Swap(node, node->right_);
-    Node* tmp = node->left_;
     node->left_ = node->right_;
-    node->right_ = node->left_->right_;
-//    node->right_->left_ = node->right_->right_; // похоже лишнее
-    node->left_->right_ =  node->left_->left_;
-    node->left_->left_ = tmp;
+    node->right_ = new_right;
+    node->left_->right_ = new_left_right;
+    node->left_->left_ = new_left_left;
     SetHeight(node->left_);
     SetHeight(node);
 }
@@ -98,5 +117,46 @@ void AVLTree::RecursiveInsert(AVLTree::Node *node, int key, int value) {
     Balance(node);
 }
 
+void AVLTree::PrintBinaryTree() {
+    PrintTree(root_, "", false);
+}
+
+void AVLTree::PrintTree(Node* node, const std::string& prefix, bool isLeft) {
+    if (node == nullptr) {
+        return;
+    }
+
+    std::cout << prefix;
+    std::cout << (isLeft ? "├──" : "└──");
+    std::cout << node->key_ << std::endl;
+
+    // Calculate the new prefix for child nodes
+    std::string childPrefix = prefix + (isLeft ? "│   " : "    ");
+
+    PrintTree(node->left_, childPrefix, true);
+    PrintTree(node->right_, childPrefix, false);
+}
 
 
+// OLD WORKING REALIZATION
+//void AVLTree::RightRotate(AVLTree::Node *node) {
+//    Swap(node, node->left_);
+//    Node* tmp = node->right_;
+//    node->right_ = node->left_;
+//    node->left_ = node->right_->left_;
+//    node->right_->left_ = node->right_->right_;
+//    node->right_->right_ = tmp;
+//    SetHeight(node->right_);
+//    SetHeight(node);
+//}
+//
+//void AVLTree::LeftRotate(AVLTree::Node *node) {
+//    Swap(node, node->right_);
+//    Node* tmp = node->left_;
+//    node->left_ = node->right_;
+//    node->right_ = node->left_->right_;
+//    node->left_->right_ =  node->left_->left_;
+//    node->left_->left_ = tmp;
+//    SetHeight(node->left_);
+//    SetHeight(node);
+//}

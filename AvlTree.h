@@ -22,6 +22,8 @@ public:
 
     AVLTree();
     void Insert(int key, int value);
+    void PrintBinaryTree();
+    void PrintTree(Node* root, const std::string& prefix, bool isLeft);
 
 private:
     Node* root_;
