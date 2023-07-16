@@ -3,38 +3,47 @@
 //
 
 #include "AvlTree.h"
+#include <set>
 
 int main() {
     AVLTree new_tree;
+    std::set<int> test_set{1,2,3};
+    test_set.insert(7);
+    std::set<int>::iterator it;
+    it = test_set.begin();
+    it++;
+    test_set.insert(it, 0);
+
+    for (it = test_set.begin(); it != test_set.end(); ++it) {
+        std::cout << *it;
+    }
+
+
 
 //    new_tree.Insert(2,2);
 //    new_tree.Insert(3,3);
 //    new_tree.Insert(4,4);
-    new_tree.Insert(20,20);
-    new_tree.Insert(29,29);
-    new_tree.Insert(72,72);
-    new_tree.Insert(11,11);
-    new_tree.Insert(50,50);
-    new_tree.Insert(65,65);
-    new_tree.Insert(41,41);
-    new_tree.Insert(33,33);
-
-    new_tree.Insert(32,32);
-
-    new_tree.Insert(99,99);
-    new_tree.Insert(91,91);
-
-
-    new_tree.PrintBinaryTree();
+//    new_tree.Insert(0,0);
+//    new_tree.Insert(1,1);
+//    new_tree.Insert(2,2);
+//    new_tree.Insert(3,3);
+//    new_tree.Insert(4,4);
+//
+//
+//    new_tree.Delete(1);
+//    new_tree.Delete(2);
+//
+//
+//    new_tree.PrintBinaryTree();
 }
 
 // Contructors
 
-AVLTree::AVLTree() : root_(nullptr) {}
+AVLTree::AVLTree() : root_(nullptr), tree_size_(0) {}
 
 AVLTree::Node::Node(int key, int value) : key_(key), value_(value) {}
 
-// Support
+// Support For Balancing
 
 int AVLTree::GetHeight(AVLTree::Node *node) {
     return node == nullptr ? -1 : node->height_;
@@ -90,6 +99,8 @@ void AVLTree::Balance(Node *node) {
     }
 }
 
+// Insert and Delete
+
 void AVLTree::Insert(int key, int value) {
     if (root_ == nullptr) {
         root_ = new Node(key, value);
@@ -117,6 +128,37 @@ void AVLTree::RecursiveInsert(AVLTree::Node *node, int key, int value) {
     Balance(node);
 }
 
+AVLTree::Node* AVLTree::Delete(int key) {
+    if (root_ == nullptr) return root_;
+    return RecursiveDelete(root_, key);
+}
+
+AVLTree::Node* AVLTree::RecursiveDelete(AVLTree::Node *node, int key) {
+    if (node == nullptr) return nullptr;
+    if (key < node->key_) {
+        node->left_ = RecursiveDelete(node->left_, key);
+    } else if (key > node->key_) {
+        node->right_ = RecursiveDelete(node->right_, key);
+    } else {
+        if (node->left_ == nullptr || node->right_ == nullptr) {
+            node = (node->left_ == nullptr) ? node->right_ : node->left_;
+        } else {
+            Node* min_in_right = GetMin(node->right_);
+            node->key_ = min_in_right->key_;
+            node->value_ = min_in_right->value_;
+            node->right_ = RecursiveDelete(node->right_, min_in_right->key_); // сомнительная строчка
+        }
+    }
+    if (node != nullptr) {
+        SetHeight(node);
+        Balance(node);
+    }
+    return node;
+}
+
+
+// Printing
+
 void AVLTree::PrintBinaryTree() {
     PrintTree(root_, "", false);
 }
@@ -135,6 +177,18 @@ void AVLTree::PrintTree(Node* node, const std::string& prefix, bool isLeft) {
 
     PrintTree(node->left_, childPrefix, true);
     PrintTree(node->right_, childPrefix, false);
+}
+
+AVLTree::Node *AVLTree::GetMin(AVLTree::Node *node) {
+    if (node == nullptr) return nullptr;
+    if (node->left_ == nullptr) return node;
+    return GetMin(node->left_);
+}
+
+AVLTree::Node *AVLTree::GetMax(AVLTree::Node *node) {
+    if (node == nullptr) return nullptr;
+    if (node->right_ == nullptr) return node;
+    return GetMax(node->right_);
 }
 
 
