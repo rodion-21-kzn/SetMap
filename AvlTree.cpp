@@ -14,6 +14,9 @@ int main() {
     new_tree.Insert(3,3);
     new_tree.Insert(4,4);
 
+    new_tree.Delete(3);
+    new_tree.Delete(1);
+
     new_tree.PrintBinaryTree();
 }
 
@@ -135,12 +138,15 @@ AVLTree::Node* AVLTree::RecursiveDelete(AVLTree::Node *node, int key) {
         node->right_ = RecursiveDelete(node->right_, key);
     } else {
         if (node->left_ == nullptr || node->right_ == nullptr) {
-            node = (node->left_ == nullptr) ? node->right_ : node->left_;
+            Node* node_right = node->right_;
+            Node* node_left = node->left_;
+            delete node;
+            node = (node_left == nullptr) ? node_right : node_left;
         } else {
             Node* min_in_right = GetMin(node->right_);
             node->key_ = min_in_right->key_;
             node->value_ = min_in_right->value_;
-            node->right_ = RecursiveDelete(node->right_, min_in_right->key_); // сомнительная строчка
+            node->right_ = RecursiveDelete(node->right_, min_in_right->key_);
         }
     }
     if (node != nullptr) {
