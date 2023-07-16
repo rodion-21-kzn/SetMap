@@ -21,6 +21,13 @@ public:
     };
 
     AVLTree();
+//    AVLTree(std::initializer_list<int> const &items);
+//    AVLTree(const AVLTree &tree);
+//    AVLTree(AVLTree &&tree);
+//
+//    AVLTree& operator=(AVLTree &&tree);
+
+    ~AVLTree();
 
     void Insert(int key, int value);
     Node* Delete(int key);
@@ -37,6 +44,8 @@ private:
     Node* GetMax(Node* node);
 
     void Swap(Node* a, Node* b); // swap only key and value
+
+    void FreeNode(Node* node);
 
     // Rotation
     void RightRotate(Node* node);

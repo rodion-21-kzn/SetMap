@@ -7,39 +7,33 @@
 
 int main() {
     AVLTree new_tree;
-    std::set<int> test_set{1,2,3};
-    test_set.insert(7);
-    std::set<int>::iterator it;
-    it = test_set.begin();
-    it++;
-    test_set.insert(it, 0);
 
-    for (it = test_set.begin(); it != test_set.end(); ++it) {
-        std::cout << *it;
-    }
+    new_tree.Insert(0,0);
+    new_tree.Insert(1,1);
+    new_tree.Insert(2,2);
+    new_tree.Insert(3,3);
+    new_tree.Insert(4,4);
 
-
-
-//    new_tree.Insert(2,2);
-//    new_tree.Insert(3,3);
-//    new_tree.Insert(4,4);
-//    new_tree.Insert(0,0);
-//    new_tree.Insert(1,1);
-//    new_tree.Insert(2,2);
-//    new_tree.Insert(3,3);
-//    new_tree.Insert(4,4);
-//
-//
-//    new_tree.Delete(1);
-//    new_tree.Delete(2);
-//
-//
-//    new_tree.PrintBinaryTree();
+    new_tree.PrintBinaryTree();
 }
 
 // Contructors
 
 AVLTree::AVLTree() : root_(nullptr), tree_size_(0) {}
+
+AVLTree::~AVLTree() {
+    FreeNode(root_);
+}
+
+void AVLTree::FreeNode(Node* node) {
+    if (node == nullptr) return;
+
+    FreeNode(node->left_);
+    FreeNode(node->right_);
+
+    delete node;
+
+}
 
 AVLTree::Node::Node(int key, int value) : key_(key), value_(value) {}
 
@@ -190,6 +184,8 @@ AVLTree::Node *AVLTree::GetMax(AVLTree::Node *node) {
     if (node->right_ == nullptr) return node;
     return GetMax(node->right_);
 }
+
+
 
 
 // OLD WORKING REALIZATION
