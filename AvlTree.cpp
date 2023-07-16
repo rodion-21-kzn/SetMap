@@ -4,8 +4,10 @@
 
 #include "AvlTree.h"
 #include <set>
+#include <map>
 
 int main() {
+
     AVLTree new_tree;
 
     new_tree.Insert(0,0);
@@ -14,15 +16,38 @@ int main() {
     new_tree.Insert(3,3);
     new_tree.Insert(4,4);
 
-    new_tree.Delete(3);
-    new_tree.Delete(1);
+    AVLTree move(std::move(new_tree));
 
     new_tree.PrintBinaryTree();
+
+//    move.PrintBinaryTree();
 }
 
 // Contructors
 
 AVLTree::AVLTree() : root_(nullptr), tree_size_(0) {}
+
+AVLTree::AVLTree(const AVLTree &other) {
+    root_ = CopyMatrix(other.root_);
+}
+
+AVLTree::Node *AVLTree::CopyMatrix(AVLTree::Node *node) {
+    if (node == nullptr) return nullptr;
+    Node *new_node = new Node(node->key_, node->value_);
+    new_node->left_ = CopyMatrix(node->left_);
+    new_node->right_ = CopyMatrix(node->right_);
+    return new_node;
+}
+
+AVLTree::AVLTree(AVLTree &&other) {
+    root_ = other.root_;
+    tree_size_ = other.tree_size_;
+    other.root_ = nullptr;
+    other.tree_size_ = 0;
+}
+
+
+
 
 AVLTree::~AVLTree() {
     FreeNode(root_);
@@ -190,6 +215,12 @@ AVLTree::Node *AVLTree::GetMax(AVLTree::Node *node) {
     if (node->right_ == nullptr) return node;
     return GetMax(node->right_);
 }
+
+
+
+
+
+
 
 
 

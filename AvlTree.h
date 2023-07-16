@@ -22,10 +22,10 @@ public:
 
     AVLTree();
 //    AVLTree(std::initializer_list<int> const &items);
-//    AVLTree(const AVLTree &tree);
-//    AVLTree(AVLTree &&tree);
+    AVLTree(const AVLTree &other);
+    AVLTree(AVLTree &&other);
 //
-//    AVLTree& operator=(AVLTree &&tree);
+//    AVLTree& operator=(AVLTree &&other);
 
     ~AVLTree();
 
@@ -46,6 +46,8 @@ private:
     void Swap(Node* a, Node* b); // swap only key and value
 
     void FreeNode(Node* node);
+
+    Node* CopyMatrix(Node* node);
 
     // Rotation
     void RightRotate(Node* node);
