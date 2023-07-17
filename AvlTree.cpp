@@ -16,38 +16,34 @@ int main() {
     new_tree.Insert(3,3);
     new_tree.Insert(4,4);
 
-    AVLTree move(std::move(new_tree));
+    AVLTree copy;
+
+    copy = new_tree;
 
     new_tree.PrintBinaryTree();
-
-//    move.PrintBinaryTree();
+    copy.PrintBinaryTree();
 }
 
 // Contructors
 
-AVLTree::AVLTree() : root_(nullptr), tree_size_(0) {}
+AVLTree::AVLTree() : root_(nullptr) {}
 
 AVLTree::AVLTree(const AVLTree &other) {
-    root_ = CopyMatrix(other.root_);
+    root_ = CopyTree(other.root_);
 }
 
-AVLTree::Node *AVLTree::CopyMatrix(AVLTree::Node *node) {
+AVLTree::Node *AVLTree::CopyTree(AVLTree::Node *node) {
     if (node == nullptr) return nullptr;
     Node *new_node = new Node(node->key_, node->value_);
-    new_node->left_ = CopyMatrix(node->left_);
-    new_node->right_ = CopyMatrix(node->right_);
+    new_node->left_ = CopyTree(node->left_);
+    new_node->right_ = CopyTree(node->right_);
     return new_node;
 }
 
-AVLTree::AVLTree(AVLTree &&other) {
+AVLTree::AVLTree(AVLTree &&other) noexcept {
     root_ = other.root_;
-    tree_size_ = other.tree_size_;
     other.root_ = nullptr;
-    other.tree_size_ = 0;
 }
-
-
-
 
 AVLTree::~AVLTree() {
     FreeNode(root_);
@@ -60,7 +56,23 @@ void AVLTree::FreeNode(Node* node) {
     FreeNode(node->right_);
 
     delete node;
+}
 
+AVLTree &AVLTree::operator=(AVLTree &&other) noexcept {
+    if (this != &other) {
+        root_ = other.root_;
+        other.root_ = nullptr;
+    }
+    return *this;
+}
+
+AVLTree &AVLTree::operator=(const AVLTree &other) {
+    if (this != &other) {
+        AVLTree temp(other);
+        FreeNode(root_);
+        *this = std::move(temp);
+    }
+    return *this;
 }
 
 AVLTree::Node::Node(int key, int value) : key_(key), value_(value) {}
@@ -126,7 +138,6 @@ void AVLTree::Balance(Node *node) {
 void AVLTree::Insert(int key, int value) {
     if (root_ == nullptr) {
         root_ = new Node(key, value);
-        tree_size_ = 1;
     } else {
         RecursiveInsert(root_, key, value);
     }
@@ -215,6 +226,10 @@ AVLTree::Node *AVLTree::GetMax(AVLTree::Node *node) {
     if (node->right_ == nullptr) return node;
     return GetMax(node->right_);
 }
+
+
+
+
 
 
 

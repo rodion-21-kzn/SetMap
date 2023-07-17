@@ -23,11 +23,10 @@ public:
     AVLTree();
 //    AVLTree(std::initializer_list<int> const &items);
     AVLTree(const AVLTree &other);
-    AVLTree(AVLTree &&other);
-//
-//    AVLTree& operator=(AVLTree &&other);
-
+    AVLTree(AVLTree &&other) noexcept;
     ~AVLTree();
+    AVLTree& operator=(AVLTree &&other) noexcept;
+    AVLTree& operator=(const AVLTree &other);
 
     void Insert(int key, int value);
     Node* Delete(int key);
@@ -37,7 +36,6 @@ public:
 
 private:
     Node* root_;
-    size_t tree_size_;
 
     // Support
     Node* GetMin(Node* node);
@@ -47,7 +45,7 @@ private:
 
     void FreeNode(Node* node);
 
-    Node* CopyMatrix(Node* node);
+    Node* CopyTree(Node* node);
 
     // Rotation
     void RightRotate(Node* node);
