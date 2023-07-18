@@ -30,11 +30,31 @@ public:
     AVLTree& operator=(AVLTree &&other) noexcept;
     AVLTree& operator=(const AVLTree &other);
 
+    // iterator begin();
+    // iterator end();
+
+//    bool empty();
+//    size_t size();
+//    size_t max_size;
+
+    void clear();
+//    void PrintTree(Node* root, const std::string& prefix, bool isLeft);
+//    void erase(iterator pos);
+    void swap(AVLTree& other);
+    void merge(AVLTree& other);
+
+//    iterator find(const Key& key);
+//    bool contains(const Key& key);
+
+
+
+
+
+
     void Insert(int key, int value);
     Node* Delete(int key);
-
     void PrintBinaryTree();
-    void PrintTree(Node* root, const std::string& prefix, bool isLeft);
+
 
 private:
     Node* root_;
@@ -48,6 +68,8 @@ private:
     void FreeNode(Node* node);
 
     Node* CopyTree(Node* node);
+
+    void PrintTree(Node* root, const std::string& prefix, bool isLeft);
 
     // Rotation
     void RightRotate(Node* node);

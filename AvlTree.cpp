@@ -8,25 +8,36 @@
 
 int main() {
 
+
+//    std::set<int> test_set;
+//
+//    test_set.insert(1);
+//
+//    test_set.clear();
+
+
+
+
     AVLTree new_tree;
 
-    new_tree.Insert(0,0);
-    new_tree.Insert(1,1);
-    new_tree.Insert(2,2);
-    new_tree.Insert(3,3);
+    new_tree.Insert(7,7);
     new_tree.Insert(4,4);
+    new_tree.Insert(9,9);
+    new_tree.Insert(6,6);
+    new_tree.Insert(8,8);
 
-    AVLTree copy;
+    new_tree.Delete(7);
 
-    copy = new_tree;
 
     new_tree.PrintBinaryTree();
-    copy.PrintBinaryTree();
+
+    new_tree.clear();
+
 }
 
 // Contructors
 
-AVLTree::AVLTree() : root_(nullptr) {}
+AVLTree::AVLTree() : root_(nullptr) {std::cout << "constructor";}
 
 AVLTree::AVLTree(const AVLTree &other) {
     root_ = CopyTree(other.root_);
@@ -46,16 +57,18 @@ AVLTree::AVLTree(AVLTree &&other) noexcept {
 }
 
 AVLTree::~AVLTree() {
-    FreeNode(root_);
+    std::cout << "destructor";
+    clear();
 }
 
 void AVLTree::FreeNode(Node* node) {
-    if (node == nullptr) return;
+    if (node == nullptr) return; // чекнуть хуйню НЕ РАБОТАЕТ
 
     FreeNode(node->left_);
     FreeNode(node->right_);
 
     delete node;
+
 }
 
 AVLTree &AVLTree::operator=(AVLTree &&other) noexcept {
@@ -205,8 +218,14 @@ AVLTree::Node* AVLTree::RecursiveDelete(AVLTree::Node *node, int key) {
         if (node->left_ == nullptr || node->right_ == nullptr) {
             Node* node_right = node->right_;
             Node* node_left = node->left_;
+            Node* node_parent = node->parent_;
             delete node;
-            node = (node_left == nullptr) ? node_right : node_left;
+            if (node_left == nullptr) {
+                node = node_right;
+            } else {
+                node = node_left;
+            }
+            if (node != nullptr) node->parent_ = node_parent;
         } else {
             Node* min_in_right = GetMin(node->right_);
             node->key_ = min_in_right->key_;
@@ -254,6 +273,24 @@ AVLTree::Node *AVLTree::GetMax(AVLTree::Node *node) {
     if (node == nullptr) return nullptr;
     if (node->right_ == nullptr) return node;
     return GetMax(node->right_);
+}
+
+
+
+
+////////////////////////////////////////////
+
+
+void AVLTree::clear() {
+    if (root_ != nullptr) FreeNode(root_);
+}
+
+void AVLTree::swap(AVLTree &other) {
+
+}
+
+void AVLTree::merge(AVLTree &other) {
+
 }
 
 
