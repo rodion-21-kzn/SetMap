@@ -15,9 +15,11 @@ public:
         int value_;
         Node* left_ = nullptr;
         Node* right_ = nullptr;
+        Node* parent_ = nullptr;
         int height_ = 0;
 
         Node(int key, int value);
+        Node(int key, int value, Node* parent);
     };
 
     AVLTree();

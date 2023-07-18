@@ -77,6 +77,7 @@ AVLTree &AVLTree::operator=(const AVLTree &other) {
 
 AVLTree::Node::Node(int key, int value) : key_(key), value_(value) {}
 
+AVLTree::Node::Node(int key, int value, Node* node) : key_(key), value_(value), parent_(node) {}
 // Support For Balancing
 
 int AVLTree::GetHeight(AVLTree::Node *node) {
@@ -100,11 +101,25 @@ void AVLTree::RightRotate(AVLTree::Node *node) {
     Node * new_left = node->left_->left_;
     Node * new_right_right = node->right_;
     Node * new_right_left = node->left_->right_;
+
     Swap(node, node->left_);
     node->right_ = node->left_;
+
     node->left_ = new_left;
+    if (node->left_) {
+        node->left_->parent_ = node;
+    }
+
     node->right_->left_ = new_right_left;
+    if (node->right_->left_) {
+        node->right_->left_->parent_ = node->right_;
+    }
+
     node->right_->right_ = new_right_right;
+    if (node->right_->right_) {
+        node->right_->right_->parent_ = node->right_;
+    }
+
     SetHeight(node->right_);
     SetHeight(node);
 }
@@ -113,11 +128,25 @@ void AVLTree::LeftRotate(AVLTree::Node *node) {
     Node * new_right = node->right_->right_;
     Node * new_left_left = node->left_;
     Node * new_left_right = node->right_->left_;
+
     Swap(node, node->right_);
     node->left_ = node->right_;
+
     node->right_ = new_right;
+    if (node->right_) {
+        node->right_->parent_ = node;
+    }
+
     node->left_->right_ = new_left_right;
+    if (node->left_->right_)  {
+        node->left_->right_->parent_ = node->left_;
+    }
+
     node->left_->left_ = new_left_left;
+    if (node->left_->left_)  {
+        node->left_->left_->parent_  = node->left_;
+    }
+
     SetHeight(node->left_);
     SetHeight(node);
 }
@@ -146,13 +175,13 @@ void AVLTree::Insert(int key, int value) {
 void AVLTree::RecursiveInsert(AVLTree::Node *node, int key, int value) {
     if (key < node->key_) {
         if (node->left_ == nullptr) {
-            node->left_ = new Node(key,value);
+            node->left_ = new Node(key,value, node);
         } else {
             RecursiveInsert(node->left_, key, value);
         }
     } else if (key > node->key_) {
         if (node->right_ == nullptr) {
-            node->right_ = new Node(key,value);
+            node->right_ = new Node(key,value, node);
         } else {
             RecursiveInsert(node->right_, key, value);
         }
