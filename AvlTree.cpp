@@ -8,36 +8,21 @@
 
 int main() {
 
-
-//    std::set<int> test_set;
-//
-//    test_set.insert(1);
-//
-//    test_set.clear();
-
-
-
-
     AVLTree new_tree;
+    new_tree.Insert(1,1);
+    new_tree.Insert(2,2);
+    new_tree.Insert(0,0);
+    AVLTree::Iterator it;
+    it = new_tree.begin();
 
-    new_tree.Insert(7,7);
-    new_tree.Insert(4,4);
-    new_tree.Insert(9,9);
-    new_tree.Insert(6,6);
-    new_tree.Insert(8,8);
-
-    new_tree.Delete(7);
-
+    it = new_tree.end();
 
     new_tree.PrintBinaryTree();
-
-    new_tree.clear();
-
 }
 
 // Contructors
 
-AVLTree::AVLTree() : root_(nullptr) {std::cout << "constructor";}
+AVLTree::AVLTree() : root_(nullptr) {}
 
 AVLTree::AVLTree(const AVLTree &other) {
     root_ = CopyTree(other.root_);
@@ -57,12 +42,11 @@ AVLTree::AVLTree(AVLTree &&other) noexcept {
 }
 
 AVLTree::~AVLTree() {
-    std::cout << "destructor";
     clear();
 }
 
 void AVLTree::FreeNode(Node* node) {
-    if (node == nullptr) return; // чекнуть хуйню НЕ РАБОТАЕТ
+    if (node == nullptr) return;
 
     FreeNode(node->left_);
     FreeNode(node->right_);
@@ -188,13 +172,13 @@ void AVLTree::Insert(int key, int value) {
 void AVLTree::RecursiveInsert(AVLTree::Node *node, int key, int value) {
     if (key < node->key_) {
         if (node->left_ == nullptr) {
-            node->left_ = new Node(key,value, node);
+            node->left_ = new Node(key, value, node);
         } else {
             RecursiveInsert(node->left_, key, value);
         }
     } else if (key > node->key_) {
         if (node->right_ == nullptr) {
-            node->right_ = new Node(key,value, node);
+            node->right_ = new Node(key, value, node);
         } else {
             RecursiveInsert(node->right_, key, value);
         }
@@ -283,6 +267,7 @@ AVLTree::Node *AVLTree::GetMax(AVLTree::Node *node) {
 
 void AVLTree::clear() {
     if (root_ != nullptr) FreeNode(root_);
+    root_ = nullptr;
 }
 
 void AVLTree::swap(AVLTree &other) {
@@ -293,17 +278,16 @@ void AVLTree::merge(AVLTree &other) {
 
 }
 
+AVLTree::Iterator AVLTree::begin() {
+    return AVLTree::Iterator(GetMin(root_));
+}
 
+AVLTree::Iterator AVLTree::end() {
+    Node* last_node = GetMax(root_);
 
-
-
-
-
-
-
-
-
-
+    Iterator test(nullptr, last_node);
+    return test;
+}
 
 
 // OLD WORKING REALIZATION
@@ -328,3 +312,6 @@ void AVLTree::merge(AVLTree &other) {
 //    SetHeight(node->left_);
 //    SetHeight(node);
 //}
+AVLTree::Iterator::Iterator() : iter_node_(nullptr), iter_past_node_(nullptr) {}
+
+AVLTree::Iterator::Iterator(AVLTree::Node *node, AVLTree::Node *past_node) : iter_node_(node), iter_past_node_(past_node) {}

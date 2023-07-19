@@ -22,6 +22,15 @@ public:
         Node(int key, int value, Node* parent);
     };
 
+    struct Iterator {
+        Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
+        Node* iter_past_node_;
+        Iterator();
+        Iterator(Node* node, Node* past_node = nullptr);
+
+//        Iterator()
+    };
+
     AVLTree();
 //    AVLTree(std::initializer_list<int> const &items);
     AVLTree(const AVLTree &other);
@@ -30,8 +39,8 @@ public:
     AVLTree& operator=(AVLTree &&other) noexcept;
     AVLTree& operator=(const AVLTree &other);
 
-    // iterator begin();
-    // iterator end();
+     Iterator begin();
+     Iterator end();
 
 //    bool empty();
 //    size_t size();
