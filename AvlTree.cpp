@@ -4,20 +4,29 @@
 
 #include "AvlTree.h"
 #include <set>
-#include <map>
 
 int main() {
 
     AVLTree new_tree;
     new_tree.Insert(1,1);
     new_tree.Insert(2,2);
-    new_tree.Insert(0,0);
+    new_tree.Insert(-5,-5);
     AVLTree::Iterator it;
-    it = new_tree.begin();
-
     it = new_tree.end();
 
-    new_tree.PrintBinaryTree();
+    std::cout << *it;
+    --it;
+    std::cout << *it;
+    --it;
+    std::cout << *it;
+    --it;
+    std::cout << *it;
+    --it;
+    std::cout << *it;
+
+
+
+//    new_tree.PrintBinaryTree();
 }
 
 // Contructors
@@ -289,6 +298,30 @@ AVLTree::Iterator AVLTree::end() {
     return test;
 }
 
+AVLTree::Node *AVLTree::MoveForward(Node* node) {
+    if (node->right_ != nullptr) {
+        return GetMin(node->right_);
+    }
+    Node* parent = node->parent_;
+    while (parent != nullptr && node == parent->right_) {
+        node = parent;
+        parent = parent->parent_;
+    }
+    return parent;
+}
+
+AVLTree::Node *AVLTree::MoveBack(AVLTree::Node *node) {
+    if (node->left_ != nullptr) {
+        return GetMax(node->left_);
+    }
+    Node* parent = node->parent_;
+    while (parent != nullptr && node == parent->left_) {
+        node = parent;
+        parent = node->parent_;
+    }
+    return parent;
+}
+
 
 // OLD WORKING REALIZATION
 //void AVLTree::RightRotate(AVLTree::Node *node) {
@@ -315,3 +348,24 @@ AVLTree::Iterator AVLTree::end() {
 AVLTree::Iterator::Iterator() : iter_node_(nullptr), iter_past_node_(nullptr) {}
 
 AVLTree::Iterator::Iterator(AVLTree::Node *node, AVLTree::Node *past_node) : iter_node_(node), iter_past_node_(past_node) {}
+
+AVLTree::Iterator AVLTree::Iterator::operator++() {
+    iter_node_ = MoveForward(iter_node_);
+    return *this;
+}
+
+AVLTree::Iterator AVLTree::Iterator::operator--() {
+    if (iter_node_ == nullptr && iter_past_node_ != nullptr) {
+        *this = iter_past_node_;
+        return *this;
+    }
+    iter_node_ = MoveBack(iter_node_);
+    return *this;
+}
+
+int AVLTree::Iterator::operator*() {
+    if (iter_node_ == nullptr) {
+        return 0;
+    }
+    return iter_node_->value_;
+}

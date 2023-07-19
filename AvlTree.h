@@ -9,7 +9,10 @@
 
 class AVLTree {
 
+
+
 public:
+
     struct Node {
         int key_;
         int value_;
@@ -28,7 +31,9 @@ public:
         Iterator();
         Iterator(Node* node, Node* past_node = nullptr);
 
-//        Iterator()
+        Iterator operator++();
+        Iterator operator--();
+        int operator*();
     };
 
     AVLTree();
@@ -69,8 +74,8 @@ private:
     Node* root_;
 
     // Support
-    Node* GetMin(Node* node);
-    Node* GetMax(Node* node);
+    static Node* GetMin(Node* node);
+    static Node* GetMax(Node* node);
 
     void Swap(Node* a, Node* b); // swap only key and value
 
@@ -91,6 +96,9 @@ private:
     // Insert && Delete
     void RecursiveInsert(Node* node, int key, int value);
     Node* RecursiveDelete(Node* node, int key);
+    // Move in tree
+    static Node* MoveForward(Node* node);
+    static Node* MoveBack(Node* node);
 };
 
 #endif //CONTAINERS_AVLTREE_H
