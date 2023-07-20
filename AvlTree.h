@@ -22,14 +22,14 @@ public:
     using const_iterator = const Iterator;
 
     struct Node {
-        int key_;
-        int value_;
+        Key key_;
+        Value value_;
         Node* left_ = nullptr;
         Node* right_ = nullptr;
         Node* parent_ = nullptr;
         int height_ = 0;
-        Node(int key, int value);
-        Node(int key, int value, Node* parent);
+        Node(Key key, Value value);
+        Node(Key key, Value value, Node* parent);
     };
 
     class Iterator {
@@ -39,7 +39,7 @@ public:
         Iterator(Node* node, Node* past_node = nullptr);
         Iterator operator++();
         Iterator operator--();
-        int operator*();
+        Value operator*();
         bool operator==(const Iterator& it);
         bool operator!=(const Iterator& it);
     private:
@@ -65,7 +65,7 @@ public:
 //    size_t max_size;
 
     void clear();
-    void Insert(int key, int value);
+    void Insert(Key key, Value value);
 
 //    void erase(iterator pos);
 //    void swap(AVLTree& other);
@@ -80,7 +80,7 @@ public:
 
 
 
-    Node* Delete(int key);
+    Node* Delete(Key key);
     void PrintBinaryTree();
 
 
@@ -107,8 +107,8 @@ private:
     void SetHeight(Node* node);
 
     // Insert && Delete && Size
-    void RecursiveInsert(Node* node, int key, int value);
-    Node* RecursiveDelete(Node* node, int key);
+    void RecursiveInsert(Node* node, Key key, Value value);
+    Node* RecursiveDelete(Node* node, Key key);
     size_t RecursiveSize(Node* node);
 };
 
