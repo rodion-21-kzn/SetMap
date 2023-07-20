@@ -8,25 +8,14 @@
 int main() {
 
     AVLTree new_tree;
-    new_tree.Insert(1,1);
-    new_tree.Insert(2,2);
-    new_tree.Insert(-5,-5);
-    AVLTree::Iterator it;
-    it = new_tree.end();
-
-    std::cout << *it;
-    --it;
-    std::cout << *it;
-    --it;
-    std::cout << *it;
-    --it;
-    std::cout << *it;
-    --it;
-    std::cout << *it;
-
-
-
-//    new_tree.PrintBinaryTree();
+    new_tree.Insert(6, 6);
+    new_tree.Insert(1, 1);
+    new_tree.Insert(10, 10);
+    new_tree.Insert(11, 11);
+    new_tree.Insert(3, 3);
+    new_tree.Delete(6);
+    std::cout << new_tree.size() << std::endl;
+    new_tree.PrintBinaryTree();
 }
 
 // Contructors
@@ -279,13 +268,13 @@ void AVLTree::clear() {
     root_ = nullptr;
 }
 
-void AVLTree::swap(AVLTree &other) {
-
-}
-
-void AVLTree::merge(AVLTree &other) {
-
-}
+//void AVLTree::swap(AVLTree &other) {
+//
+//}
+//
+//void AVLTree::merge(AVLTree &other) {
+//
+//}
 
 AVLTree::Iterator AVLTree::begin() {
     return AVLTree::Iterator(GetMin(root_));
@@ -298,7 +287,22 @@ AVLTree::Iterator AVLTree::end() {
     return test;
 }
 
-AVLTree::Node *AVLTree::MoveForward(Node* node) {
+bool AVLTree::empty() {
+    return root_ == nullptr;
+}
+
+size_t AVLTree::size() {
+    return RecursiveSize(root_);
+}
+
+size_t AVLTree::RecursiveSize(AVLTree::Node *node) {
+    if (node == nullptr) return 0;
+    size_t left_size = RecursiveSize(node->left_);
+    size_t right_size = RecursiveSize(node->right_);
+    return 1 + left_size + right_size;
+}
+
+AVLTree::Node *AVLTree::Iterator::MoveForward(AVLTree::Node *node)  {
     if (node->right_ != nullptr) {
         return GetMin(node->right_);
     }
@@ -310,7 +314,7 @@ AVLTree::Node *AVLTree::MoveForward(Node* node) {
     return parent;
 }
 
-AVLTree::Node *AVLTree::MoveBack(AVLTree::Node *node) {
+AVLTree::Node *AVLTree::Iterator::MoveBack(AVLTree::Node *node)  {
     if (node->left_ != nullptr) {
         return GetMax(node->left_);
     }
@@ -369,3 +373,13 @@ int AVLTree::Iterator::operator*() {
     }
     return iter_node_->value_;
 }
+
+bool AVLTree::Iterator::operator==(const AVLTree::Iterator &it) {
+    return iter_node_ == it.iter_node_;
+}
+
+bool AVLTree::Iterator::operator!=(const AVLTree::Iterator &it) {
+    return iter_node_ != it.iter_node_;
+}
+
+

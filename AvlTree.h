@@ -7,11 +7,19 @@
 
 #include <iostream>
 
+
+template<typename Key, typename Value>
 class AVLTree {
-
-
-
 public:
+    class Iterator;
+    struct Node;
+
+    using key_type = Key;
+    using value_type = Value;
+    using reference = value_type &;
+    using const_reference = const value_type &;
+    using iterator = Iterator;
+    using const_iterator = const Iterator;
 
     struct Node {
         int key_;
@@ -20,20 +28,25 @@ public:
         Node* right_ = nullptr;
         Node* parent_ = nullptr;
         int height_ = 0;
-
         Node(int key, int value);
         Node(int key, int value, Node* parent);
     };
 
-    struct Iterator {
-        Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
-        Node* iter_past_node_;
+    class Iterator {
+
+    public:
         Iterator();
         Iterator(Node* node, Node* past_node = nullptr);
-
         Iterator operator++();
         Iterator operator--();
         int operator*();
+        bool operator==(const Iterator& it);
+        bool operator!=(const Iterator& it);
+    private:
+        Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
+        Node* iter_past_node_;
+        Node* MoveForward(Node* node);
+        Node* MoveBack(Node* node);
     };
 
     AVLTree();
@@ -47,15 +60,16 @@ public:
      Iterator begin();
      Iterator end();
 
-//    bool empty();
-//    size_t size();
+    bool empty();
+    size_t size();
 //    size_t max_size;
 
     void clear();
-//    void PrintTree(Node* root, const std::string& prefix, bool isLeft);
+    void Insert(int key, int value);
+
 //    void erase(iterator pos);
-    void swap(AVLTree& other);
-    void merge(AVLTree& other);
+//    void swap(AVLTree& other);
+//    void merge(AVLTree& other);
 
 //    iterator find(const Key& key);
 //    bool contains(const Key& key);
@@ -65,7 +79,7 @@ public:
 
 
 
-    void Insert(int key, int value);
+
     Node* Delete(int key);
     void PrintBinaryTree();
 
@@ -76,13 +90,12 @@ private:
     // Support
     static Node* GetMin(Node* node);
     static Node* GetMax(Node* node);
-
     void Swap(Node* a, Node* b); // swap only key and value
-
     void FreeNode(Node* node);
 
     Node* CopyTree(Node* node);
 
+    // Print
     void PrintTree(Node* root, const std::string& prefix, bool isLeft);
 
     // Rotation
@@ -93,12 +106,10 @@ private:
     int GetHeight(Node* node);
     void SetHeight(Node* node);
 
-    // Insert && Delete
+    // Insert && Delete && Size
     void RecursiveInsert(Node* node, int key, int value);
     Node* RecursiveDelete(Node* node, int key);
-    // Move in tree
-    static Node* MoveForward(Node* node);
-    static Node* MoveBack(Node* node);
+    size_t RecursiveSize(Node* node);
 };
 
 #endif //CONTAINERS_AVLTREE_H
