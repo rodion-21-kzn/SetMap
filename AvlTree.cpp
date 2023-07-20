@@ -8,22 +8,24 @@
 int main() {
 
     AVLTree<char, char> new_tree;
-    new_tree.Insert('a','a');
-    new_tree.Insert('b','b');
-    new_tree.Insert('c','c');
+    AVLTree<char, char>::Node *insert_node;
 
     AVLTree<char,char>::Iterator it;
+    bool check;
 
-    new_tree.size();
+    std::pair<AVLTree<char,char>::Iterator, bool> test;
+    new_tree.Insert('a','a');
+    new_tree.Insert('b','b');
+    test = new_tree.Insert('c','c');
 
-    it = new_tree.begin();
-    std::cout << *it;
-//
-    std::cout << new_tree.size() << std::endl;
-    new_tree.PrintBinaryTree();
+
+    std::cout << *it << std::endl;
+    std::cout << check << std::endl;
+
+
 }
 
-// Contructors
+// CONSTRUCTORS
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::AVLTree() : root_(nullptr) {}
@@ -34,7 +36,7 @@ AVLTree<Key, Value>::AVLTree(const AVLTree &other) {
 }
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node) {
+typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node) { // АЛГОРИТМ КОПИРОВАНИЯ
     if (node == nullptr) return nullptr;
     Node *new_node = new Node(node->key_, node->value_);
     new_node->left_ = CopyTree(node->left_);
@@ -54,7 +56,7 @@ AVLTree<Key, Value>::~AVLTree() {
 }
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::FreeNode(Node* node) {
+void AVLTree<Key, Value>::FreeNode(Node* node) { // РЕКУРСИЯ ДЛЯ УДАЛЕНИЯ
     if (node == nullptr) return;
 
     FreeNode(node->left_);
@@ -82,6 +84,8 @@ AVLTree<Key, Value> &AVLTree<Key, Value>::operator=(const AVLTree &other) {
     }
     return *this;
 }
+
+// КОНСРУКТОР ДЛЯ УЗЛОВ
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::Node::Node(Key key, Value value)  : key_(key), value_(value) {}
@@ -182,31 +186,46 @@ void AVLTree<Key, Value>::Balance(Node *node) {
 // Insert and Delete
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::Insert(Key key, Value value) {
+//std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value)
+std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value) {
+    std::pair<Iterator, bool> return_value;
     if (root_ == nullptr) {
         root_ = new Node(key, value);
+        return_value.first = Iterator(root_);
+        return_value.second = true;
     } else {
-        RecursiveInsert(root_, key, value);
+        std::pair<Node*, bool> tmp = RecursiveInsert(root_, key, value);
+        return_value.first = Iterator(tmp.first);
+        return_value.second = tmp.second;
     }
+    return return_value;
 }
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, Key key, Value value) {
+std::pair<typename AVLTree<Key,Value>::Node*, bool> AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, Key key, Value value) {
+    std::pair<Node*, bool> return_pair(nullptr, false);
     if (key < node->key_) {
         if (node->left_ == nullptr) {
             node->left_ = new Node(key, value, node);
+            return_pair.first = node->left_;
+            return_pair.second = true;
         } else {
-            RecursiveInsert(node->left_, key, value);
+            return_pair = RecursiveInsert(node->left_, key, value);
         }
     } else if (key > node->key_) {
         if (node->right_ == nullptr) {
             node->right_ = new Node(key, value, node);
+            return_pair.first = node->right_;
+            return_pair.second = true;
         } else {
-            RecursiveInsert(node->right_, key, value);
+            return_pair = RecursiveInsert(node->right_, key, value);
         }
+    } else if (key == node->key_){
+        return std::pair<Node*, bool>(node, false); // инсерт не произошел потому что такой ключ был в дереве
     }
     SetHeight(node);
     Balance(node);
+    return return_pair;
 }
 
 template<typename Key, typename Value>
@@ -372,7 +391,14 @@ AVLTree<Key, Value>::Iterator::Iterator(AVLTree::Node *node, AVLTree::Node *past
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator++() {
+    Node* tmp;
+    if (iter_node_ != nullptr) {
+        tmp = GetMax(iter_node_);
+    }
     iter_node_ = MoveForward(iter_node_);
+    if (iter_node_ == nullptr) {
+        iter_past_node_ = tmp;
+    }
     return *this;
 }
 

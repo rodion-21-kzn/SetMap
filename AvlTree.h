@@ -65,7 +65,7 @@ public:
 //    size_t max_size;
 
     void clear();
-    void Insert(Key key, Value value);
+    std::pair<iterator, bool> Insert(Key key, Value value);
 
 //    void erase(iterator pos);
 //    void swap(AVLTree& other);
@@ -107,7 +107,7 @@ private:
     void SetHeight(Node* node);
 
     // Insert && Delete && Size
-    void RecursiveInsert(Node* node, Key key, Value value);
+    std::pair<Node*, bool>  RecursiveInsert(Node* node, Key key, Value value);
     Node* RecursiveDelete(Node* node, Key key);
     size_t RecursiveSize(Node* node);
 };
