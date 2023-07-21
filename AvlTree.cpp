@@ -12,17 +12,10 @@ int main() {
     AVLTree<int, int> merge_tree;
 
 
-    AVLTree<char,char>::Iterator it;
+    AVLTree<int, int>::Iterator it;
     bool check;
 
     std::pair<AVLTree<int, int>::Iterator, bool> test;
-
-
-    test = new_tree.Insert(1,1);
-    test = new_tree.Insert(10,10);
-    test = new_tree.Insert(5,5);
-    test = new_tree.Insert(3,3);
-    test = new_tree.Insert(2,2);
 
     merge_tree.Insert(0,0);
     merge_tree.Insert(15,15);
@@ -30,8 +23,18 @@ int main() {
     merge_tree.Insert(2,2);
     merge_tree.Insert(3,3);
 
+
+    new_tree.Insert(7,7);
+    new_tree.Insert(2,2);
+    new_tree.Insert(3,3);
+
+    merge_tree.PrintBinaryTree();
+
+    std::cout << std::endl;
+
     new_tree.merge(merge_tree);
 
+    std::cout <<  std::endl;
 
     new_tree.PrintBinaryTree();
     std::cout << std::endl;
@@ -201,7 +204,7 @@ void AVLTree<Key, Value>::Balance(Node *node) { // правила баланси
 
 template<typename Key, typename Value>
 //std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value)
-std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
+std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(const Key& key, Value value) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
     std::pair<Iterator, bool> return_value;
     if (root_ == nullptr) {
         root_ = new Node(key, value);
@@ -209,7 +212,7 @@ std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Inse
         return_value.second = true;
     } else {
         bool check_insert = RecursiveInsert(root_, key, value);
-        return_value.first = find(key, value); // НАДО НАПИСАТЬ ФУНКЦИЮ FIND
+        return_value.first = find(key); // НАДО НАПИСАТЬ ФУНКЦИЮ FIND
         return_value.second = check_insert;
         // НАДО ДОПИСАТЬ FIND СДелать
     }
@@ -217,7 +220,7 @@ std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Inse
 }
 
 template<typename Key, typename Value>
-bool AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, Key key, Value value) { // Рекурсивная вставка в дерево с добавленной логикой понимания произошла ли вставка на самом деле, возвращает также указатель на ноду
+bool AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, const Key& key, Value value) { // Рекурсивная вставка в дерево с добавленной логикой понимания произошла ли вставка на самом деле, возвращает также указатель на ноду
     bool check_insert = false;
     if (key < node->key_) {
         if (node->left_ == nullptr) {
@@ -344,10 +347,18 @@ void AVLTree<Key, Value>::swap(AVLTree &other) {
 
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::merge(AVLTree &other) {
+
+    AVLTree const_tree(other);
+
+    Iterator const_it = const_tree.begin();
     Iterator it = other.begin();
-    for (; it != other.end(); ++it) {
-        std::pair<Iterator, bool> pr = Insert(*it, *it);
+
+
+    for (; const_it != const_tree.end(); ++const_it) {
+
+        std::pair<Iterator, bool> pr = Insert(*const_it, *const_it);
         if (pr.second) other.erase(pr.first);
+
     }
 }
 
@@ -358,8 +369,9 @@ typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::begin() {
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::end() {
-    Node* last_node = GetMax(root_);
+    if (root_ == nullptr) return begin();
 
+    Node* last_node = GetMax(root_);
     Iterator test(nullptr, last_node);
     return test;
 }
@@ -381,6 +393,24 @@ size_t AVLTree<Key, Value>::RecursiveSize(AVLTree::Node *node) {
     size_t right_size = RecursiveSize(node->right_);
     return 1 + left_size + right_size;
 }
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::iterator AVLTree<Key, Value>::find(const Key &key) {
+    Node* exact_node = RecursiveFind(root_, key);
+    return Iterator(exact_node);
+}
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveFind(AVLTree::Node *node, const Key &key) {
+    if (node == nullptr || node->key_ == key) return node;
+    if (key > node->key_) return RecursiveFind(node->right_, key);
+    if (key < node->key_) return RecursiveFind(node->left_, key);
+}
+
+
+
+
+// ITERATOR
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::Iterator::MoveForward(AVLTree::Node *node)  {

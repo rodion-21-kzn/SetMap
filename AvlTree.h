@@ -67,13 +67,13 @@ public:
 //    size_t max_size;
 
     void clear();
-    std::pair<iterator, bool> Insert(Key key, Value value);
+    std::pair<iterator, bool> Insert(const Key& key, Value value);
 
     void erase(iterator pos);
     void swap(AVLTree& other);
     void merge(AVLTree& other);
 
-//    iterator find(const Key& key);
+    iterator find(const Key& key);
 //    bool contains(const Key& key);
 
 
@@ -104,9 +104,13 @@ private:
     void SetHeight(Node* node);
 
     // Insert && Delete && Size
-    bool RecursiveInsert(Node* node, Key key, Value value);
+    bool RecursiveInsert(Node* node, const Key& key, Value value);
     Node* RecursiveDelete(Node* node, Key key);
     size_t RecursiveSize(Node* node);
+
+    Node* RecursiveFind(Node* node, const Key& key);
 };
+
+
 
 #endif //CONTAINERS_AVLTREE_H
