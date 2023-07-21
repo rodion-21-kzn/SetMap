@@ -7,22 +7,35 @@
 
 int main() {
 
-    AVLTree<char, char> new_tree;
-    AVLTree<char, char>::Node *insert_node;
+    AVLTree<int, int> new_tree;
+
+    AVLTree<int, int> merge_tree;
+
 
     AVLTree<char,char>::Iterator it;
     bool check;
 
-    std::pair<AVLTree<char,char>::Iterator, bool> test;
-    new_tree.Insert('a','a');
-    new_tree.Insert('b','b');
-    test = new_tree.Insert('c','c');
+    std::pair<AVLTree<int, int>::Iterator, bool> test;
 
 
-    std::cout << *it << std::endl;
-    std::cout << check << std::endl;
+    test = new_tree.Insert(1,1);
+    test = new_tree.Insert(10,10);
+    test = new_tree.Insert(5,5);
+    test = new_tree.Insert(3,3);
+    test = new_tree.Insert(2,2);
+
+    merge_tree.Insert(0,0);
+    merge_tree.Insert(15,15);
+    merge_tree.Insert(-1,-1);
+    merge_tree.Insert(2,2);
+    merge_tree.Insert(3,3);
+
+    new_tree.merge(merge_tree);
 
 
+    new_tree.PrintBinaryTree();
+    std::cout << std::endl;
+    merge_tree.PrintBinaryTree();
 }
 
 // CONSTRUCTORS
@@ -92,25 +105,26 @@ AVLTree<Key, Value>::Node::Node(Key key, Value value)  : key_(key), value_(value
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::Node::Node(Key key, Value value, Node* node)   : key_(key), value_(value), parent_(node) {}
+
 // Support For Balancing
 
 template<typename Key, typename Value>
 int AVLTree<Key, Value>::GetHeight(AVLTree::Node *node) {
-    return node == nullptr ? -1 : node->height_;
+    return node == nullptr ? -1 : node->height_; // У несуществуюшей ноды высота по правилам -1 иначе мы возьмем высоту у существуюшей ноды
 }
 
 template<typename Key, typename Value>
 int AVLTree<Key, Value>::GetBalance(AVLTree::Node *node) {
-    return node == nullptr ? 0 : GetHeight(node->right_)  - GetHeight(node->left_);
+    return node == nullptr ? 0 : GetHeight(node->right_)  - GetHeight(node->left_); // У несуществуюшей ноды баланс фактор по правилам 0 иначе мы считаем баланс по формуле
 }
 
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::SetHeight(AVLTree::Node *node) {
-    node->height_ = std::max(GetHeight(node->left_), GetHeight(node->right_)) + 1;
+    node->height_ = std::max(GetHeight(node->left_), GetHeight(node->right_)) + 1; // вычисление высоты для существующей ноды
 }
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::Swap(AVLTree::Node *a, AVLTree::Node *b) {
+void AVLTree<Key, Value>::SwapValue(AVLTree::Node *a, AVLTree::Node *b) { // Свап только значений
     std::swap(a->key_, b->key_);
     std::swap(a->value_, b->value_);
 }
@@ -121,7 +135,7 @@ void AVLTree<Key, Value>::RightRotate(AVLTree::Node *node) {
     Node * new_right_right = node->right_;
     Node * new_right_left = node->left_->right_;
 
-    Swap(node, node->left_);
+    SwapValue(node, node->left_);
     node->right_ = node->left_;
 
     node->left_ = new_left;
@@ -149,7 +163,7 @@ void AVLTree<Key, Value>::LeftRotate(AVLTree::Node *node) {
     Node * new_left_left = node->left_;
     Node * new_left_right = node->right_->left_;
 
-    Swap(node, node->right_);
+    SwapValue(node, node->right_);
     node->left_ = node->right_;
 
     node->right_ = new_right;
@@ -172,7 +186,7 @@ void AVLTree<Key, Value>::LeftRotate(AVLTree::Node *node) {
 }
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::Balance(Node *node) {
+void AVLTree<Key, Value>::Balance(Node *node) { // правила балансировки чтобы понять какой вид поворота нужен
     int balance = GetBalance(node);
     if (balance == -2) {
         if(GetBalance(node->left_) == 1) LeftRotate(node->left_);
@@ -187,51 +201,57 @@ void AVLTree<Key, Value>::Balance(Node *node) {
 
 template<typename Key, typename Value>
 //std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value)
-std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value) {
+std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
     std::pair<Iterator, bool> return_value;
     if (root_ == nullptr) {
         root_ = new Node(key, value);
         return_value.first = Iterator(root_);
         return_value.second = true;
     } else {
-        std::pair<Node*, bool> tmp = RecursiveInsert(root_, key, value);
-        return_value.first = Iterator(tmp.first);
-        return_value.second = tmp.second;
+        bool check_insert = RecursiveInsert(root_, key, value);
+        return_value.first = find(key, value); // НАДО НАПИСАТЬ ФУНКЦИЮ FIND
+        return_value.second = check_insert;
+        // НАДО ДОПИСАТЬ FIND СДелать
     }
     return return_value;
 }
 
 template<typename Key, typename Value>
-std::pair<typename AVLTree<Key,Value>::Node*, bool> AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, Key key, Value value) {
-    std::pair<Node*, bool> return_pair(nullptr, false);
+bool AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, Key key, Value value) { // Рекурсивная вставка в дерево с добавленной логикой понимания произошла ли вставка на самом деле, возвращает также указатель на ноду
+    bool check_insert = false;
     if (key < node->key_) {
         if (node->left_ == nullptr) {
             node->left_ = new Node(key, value, node);
-            return_pair.first = node->left_;
-            return_pair.second = true;
+            check_insert = true;
         } else {
-            return_pair = RecursiveInsert(node->left_, key, value);
+            check_insert = RecursiveInsert(node->left_, key, value);
         }
     } else if (key > node->key_) {
         if (node->right_ == nullptr) {
             node->right_ = new Node(key, value, node);
-            return_pair.first = node->right_;
-            return_pair.second = true;
+            check_insert = true;
         } else {
-            return_pair = RecursiveInsert(node->right_, key, value);
+            check_insert = RecursiveInsert(node->right_, key, value);
         }
-    } else if (key == node->key_){
-        return std::pair<Node*, bool>(node, false); // инсерт не произошел потому что такой ключ был в дереве
+    } else if (key == node->key_) {
+        return check_insert; // инсерт не произошел потому что такой ключ был в дереве
     }
     SetHeight(node);
     Balance(node);
-    return return_pair;
+    return check_insert;
 }
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::erase(AVLTree::iterator pos) {
+    if (root_ == nullptr || pos.iter_node_ == nullptr) return;
+    root_ = RecursiveDelete(root_, *pos);
+}
+
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::Delete(Key key) {
     if (root_ == nullptr) return root_;
-    return RecursiveDelete(root_, key);
+    return root_ = RecursiveDelete(root_, key);
 }
 
 template<typename Key, typename Value>
@@ -317,13 +337,19 @@ void AVLTree<Key, Value>::clear() {
     root_ = nullptr;
 }
 
-//void AVLTree::swap(AVLTree &other) {
-//
-//}
-//
-//void AVLTree::merge(AVLTree &other) {
-//
-//}
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::swap(AVLTree &other) {
+    std::swap(root_, other.root_);
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::merge(AVLTree &other) {
+    Iterator it = other.begin();
+    for (; it != other.end(); ++it) {
+        std::pair<Iterator, bool> pr = Insert(*it, *it);
+        if (pr.second) other.erase(pr.first);
+    }
+}
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::begin() {

@@ -42,7 +42,9 @@ public:
         Value operator*();
         bool operator==(const Iterator& it);
         bool operator!=(const Iterator& it);
-    private:
+
+        friend class AVLTree;
+    protected:
         Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
         Node* iter_past_node_;
         Node* MoveForward(Node* node);
@@ -67,21 +69,16 @@ public:
     void clear();
     std::pair<iterator, bool> Insert(Key key, Value value);
 
-//    void erase(iterator pos);
-//    void swap(AVLTree& other);
-//    void merge(AVLTree& other);
+    void erase(iterator pos);
+    void swap(AVLTree& other);
+    void merge(AVLTree& other);
 
 //    iterator find(const Key& key);
 //    bool contains(const Key& key);
 
 
-
-
-
-
-
-    Node* Delete(Key key);
-    void PrintBinaryTree();
+    Node* Delete(Key key); // СТАРАЯ ФУНКЦИЯ ОБЕРТКА - УДАЛИТЬ В РЕЛИЗЕ тк есть заменя - Erase
+    void PrintBinaryTree(); // ТОЖЕ удалить
 
 
 private:
@@ -90,13 +87,13 @@ private:
     // Support
     static Node* GetMin(Node* node);
     static Node* GetMax(Node* node);
-    void Swap(Node* a, Node* b); // swap only key and value
+    void SwapValue(Node* a, Node* b); // swap only key and value
     void FreeNode(Node* node);
 
     Node* CopyTree(Node* node);
 
     // Print
-    void PrintTree(Node* root, const std::string& prefix, bool isLeft);
+    void PrintTree(Node* root, const std::string& prefix, bool isLeft); // УДАЛИТЬ
 
     // Rotation
     void RightRotate(Node* node);
@@ -107,7 +104,7 @@ private:
     void SetHeight(Node* node);
 
     // Insert && Delete && Size
-    std::pair<Node*, bool>  RecursiveInsert(Node* node, Key key, Value value);
+    bool RecursiveInsert(Node* node, Key key, Value value);
     Node* RecursiveDelete(Node* node, Key key);
     size_t RecursiveSize(Node* node);
 };
