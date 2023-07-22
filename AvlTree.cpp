@@ -3,17 +3,16 @@
 //
 
 #include "AvlTree.h"
-#include <cstdlib>
+
 #include <set>
+#include <sys/types.h>
+#include <sys/sysctl.h>
 
 int main() {
-//    // Используем команду "sysctl" для получения информации о памяти
-//     total_ram = std::atoll(std::system("sysctl -n hw.memsize").c_str()));
-//    std::string free_ram = std::to_string(std::atoll(std::system("sysctl -n vm.stats.vm.v_page_free_count").c_str()));
-//
-//    std::cout << "Общий объем ОЗУ: " << total_ram << " байт" << std::endl;
-//    std::cout << "Свободное ОЗУ: " << free_ram << " байт" << std::endl;
-
+    AVLTree<int, int> test;
+    test.Insert(1, 1);
+    test.Insert(5, 5);
+    std::cout << test.contains(3);
 }
 
 // CONSTRUCTORS
@@ -370,7 +369,14 @@ size_t AVLTree<Key, Value>::RecursiveSize(AVLTree::Node *node) {
 
 template<typename Key, typename Value>
 size_t AVLTree<Key, Value>::max_size() {
-    return std::numeric_limits<std::size_t>::max() / 8;
+    int mib[] = {CTL_HW, HW_MEMSIZE};
+    uint64_t physicalMemory;
+    size_t length = sizeof(physicalMemory);
+    if (sysctl(mib, 2, &physicalMemory, &length, nullptr, 0) != 0) {
+        throw std::logic_error("no access to memory");
+    }
+    return std::numeric_limits<size_t>::max() / sizeof(Key)  ;
+//    return std::numeric_limits<std::size_t>::max() / (physicalMemory / (1024 * 1024 * 1024) / sizeof(Key));
 }
 
 template<typename Key, typename Value>
@@ -385,6 +391,15 @@ typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveFind(AVLTree::
     if (key > node->key_) return RecursiveFind(node->right_, key);
     if (key < node->key_) return RecursiveFind(node->left_, key);
 }
+
+
+
+template<typename Key, typename Value>
+bool AVLTree<Key, Value>::contains(const Key &key) {
+    Node* contain_node = RecursiveFind(root_, key);
+    return !(contain_node == nullptr);
+}
+
 
 // ITERATOR
 

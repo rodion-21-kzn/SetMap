@@ -74,7 +74,7 @@ public:
     void merge(AVLTree& other);
 
     iterator find(const Key& key);
-//    bool contains(const Key& key);
+    bool contains(const Key& key);
 
 
     Node* Delete(Key key); // СТАРАЯ ФУНКЦИЯ ОБЕРТКА - УДАЛИТЬ В РЕЛИЗЕ тк есть заменя - Erase
@@ -110,7 +110,5 @@ private:
 
     Node* RecursiveFind(Node* node, const Key& key);
 };
-
-
 
 #endif //CONTAINERS_AVLTREE_H
