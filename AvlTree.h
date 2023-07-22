@@ -64,7 +64,7 @@ public:
 
     bool empty();
     size_t size();
-//    size_t max_size;
+    size_t max_size();
 
     void clear();
     std::pair<iterator, bool> Insert(const Key& key, Value value);
@@ -90,7 +90,7 @@ private:
     void SwapValue(Node* a, Node* b); // swap only key and value
     void FreeNode(Node* node);
 
-    Node* CopyTree(Node* node);
+    Node* CopyTree(Node* node, Node* parent);
 
     // Print
     void PrintTree(Node* root, const std::string& prefix, bool isLeft); // УДАЛИТЬ

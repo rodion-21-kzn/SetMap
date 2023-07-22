@@ -3,42 +3,17 @@
 //
 
 #include "AvlTree.h"
+#include <cstdlib>
 #include <set>
 
 int main() {
+//    // Используем команду "sysctl" для получения информации о памяти
+//     total_ram = std::atoll(std::system("sysctl -n hw.memsize").c_str()));
+//    std::string free_ram = std::to_string(std::atoll(std::system("sysctl -n vm.stats.vm.v_page_free_count").c_str()));
+//
+//    std::cout << "Общий объем ОЗУ: " << total_ram << " байт" << std::endl;
+//    std::cout << "Свободное ОЗУ: " << free_ram << " байт" << std::endl;
 
-    AVLTree<int, int> new_tree;
-
-    AVLTree<int, int> merge_tree;
-
-
-    AVLTree<int, int>::Iterator it;
-    bool check;
-
-    std::pair<AVLTree<int, int>::Iterator, bool> test;
-
-    merge_tree.Insert(0,0);
-    merge_tree.Insert(15,15);
-    merge_tree.Insert(-1,-1);
-    merge_tree.Insert(2,2);
-    merge_tree.Insert(3,3);
-
-
-    new_tree.Insert(7,7);
-    new_tree.Insert(2,2);
-    new_tree.Insert(3,3);
-
-    merge_tree.PrintBinaryTree();
-
-    std::cout << std::endl;
-
-    new_tree.merge(merge_tree);
-
-    std::cout <<  std::endl;
-
-    new_tree.PrintBinaryTree();
-    std::cout << std::endl;
-    merge_tree.PrintBinaryTree();
 }
 
 // CONSTRUCTORS
@@ -48,15 +23,15 @@ AVLTree<Key, Value>::AVLTree() : root_(nullptr) {}
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::AVLTree(const AVLTree &other) {
-    root_ = CopyTree(other.root_);
+    root_ = CopyTree(other.root_, nullptr);
 }
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node) { // АЛГОРИТМ КОПИРОВАНИЯ
+typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node, AVLTree::Node *parent) { // АЛГОРИТМ КОПИРОВАНИЯ
     if (node == nullptr) return nullptr;
-    Node *new_node = new Node(node->key_, node->value_);
-    new_node->left_ = CopyTree(node->left_);
-    new_node->right_ = CopyTree(node->right_);
+    Node *new_node = new Node(node->key_, node->value_, parent);
+    new_node->left_ = CopyTree(node->left_, new_node);
+    new_node->right_ = CopyTree(node->right_, new_node);
     return new_node;
 }
 
@@ -214,7 +189,6 @@ std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Inse
         bool check_insert = RecursiveInsert(root_, key, value);
         return_value.first = find(key); // НАДО НАПИСАТЬ ФУНКЦИЮ FIND
         return_value.second = check_insert;
-        // НАДО ДОПИСАТЬ FIND СДелать
     }
     return return_value;
 }
@@ -395,6 +369,11 @@ size_t AVLTree<Key, Value>::RecursiveSize(AVLTree::Node *node) {
 }
 
 template<typename Key, typename Value>
+size_t AVLTree<Key, Value>::max_size() {
+    return std::numeric_limits<std::size_t>::max() / 8;
+}
+
+template<typename Key, typename Value>
 typename AVLTree<Key, Value>::iterator AVLTree<Key, Value>::find(const Key &key) {
     Node* exact_node = RecursiveFind(root_, key);
     return Iterator(exact_node);
@@ -406,9 +385,6 @@ typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveFind(AVLTree::
     if (key > node->key_) return RecursiveFind(node->right_, key);
     if (key < node->key_) return RecursiveFind(node->left_, key);
 }
-
-
-
 
 // ITERATOR
 
@@ -437,7 +413,6 @@ typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::Iterator::MoveBack(AVLT
     }
     return parent;
 }
-
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::Iterator::Iterator() : iter_node_(nullptr), iter_past_node_(nullptr) {}
