@@ -9,13 +9,23 @@
 #include <sys/sysctl.h>
 
 int main() {
-    AVLTree<int, int> test;
-    test.Insert(1, 1);
-    test.Insert(5, 5);
-    std::cout << test.contains(3);
+
+
+//    std::set<std::string> test1;
+//    std::set<std::string>::iterator it;
+//    test1.insert("hui2");
+//    test1.insert("hui1");
+//    it = test1.begin();
+//    for (;it != test1.end(); ++it) {
+//        std::cout << *it << std::endl;
+//    }
+//
+//    it = test1.end();
+//    std::cout << *it << std::endl;
+//    std::cout << "STOP" << std::endl;
 }
 
-// CONSTRUCTORS
+// КОНСТРУКТОРЫ ДЛЯ ДЕРЕВА / ДЕСТРУКТОР / ОПЕРАТОРЫ
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::AVLTree() : root_(nullptr) {}
@@ -23,15 +33,6 @@ AVLTree<Key, Value>::AVLTree() : root_(nullptr) {}
 template<typename Key, typename Value>
 AVLTree<Key, Value>::AVLTree(const AVLTree &other) {
     root_ = CopyTree(other.root_, nullptr);
-}
-
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node, AVLTree::Node *parent) { // АЛГОРИТМ КОПИРОВАНИЯ
-    if (node == nullptr) return nullptr;
-    Node *new_node = new Node(node->key_, node->value_, parent);
-    new_node->left_ = CopyTree(node->left_, new_node);
-    new_node->right_ = CopyTree(node->right_, new_node);
-    return new_node;
 }
 
 template<typename Key, typename Value>
@@ -43,17 +44,6 @@ AVLTree<Key, Value>::AVLTree(AVLTree &&other) noexcept {
 template<typename Key, typename Value>
 AVLTree<Key, Value>::~AVLTree() {
     clear();
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::FreeNode(Node* node) { // РЕКУРСИЯ ДЛЯ УДАЛЕНИЯ
-    if (node == nullptr) return;
-
-    FreeNode(node->left_);
-    FreeNode(node->right_);
-
-    delete node;
-
 }
 
 template<typename Key, typename Value>
@@ -75,109 +65,9 @@ AVLTree<Key, Value> &AVLTree<Key, Value>::operator=(const AVLTree &other) {
     return *this;
 }
 
-// КОНСРУКТОР ДЛЯ УЗЛОВ
-
-template<typename Key, typename Value>
-AVLTree<Key, Value>::Node::Node(Key key, Value value)  : key_(key), value_(value) {}
-
-template<typename Key, typename Value>
-AVLTree<Key, Value>::Node::Node(Key key, Value value, Node* node)   : key_(key), value_(value), parent_(node) {}
-
-// Support For Balancing
-
-template<typename Key, typename Value>
-int AVLTree<Key, Value>::GetHeight(AVLTree::Node *node) {
-    return node == nullptr ? -1 : node->height_; // У несуществуюшей ноды высота по правилам -1 иначе мы возьмем высоту у существуюшей ноды
-}
-
-template<typename Key, typename Value>
-int AVLTree<Key, Value>::GetBalance(AVLTree::Node *node) {
-    return node == nullptr ? 0 : GetHeight(node->right_)  - GetHeight(node->left_); // У несуществуюшей ноды баланс фактор по правилам 0 иначе мы считаем баланс по формуле
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::SetHeight(AVLTree::Node *node) {
-    node->height_ = std::max(GetHeight(node->left_), GetHeight(node->right_)) + 1; // вычисление высоты для существующей ноды
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::SwapValue(AVLTree::Node *a, AVLTree::Node *b) { // Свап только значений
-    std::swap(a->key_, b->key_);
-    std::swap(a->value_, b->value_);
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::RightRotate(AVLTree::Node *node) {
-    Node * new_left = node->left_->left_;
-    Node * new_right_right = node->right_;
-    Node * new_right_left = node->left_->right_;
-
-    SwapValue(node, node->left_);
-    node->right_ = node->left_;
-
-    node->left_ = new_left;
-    if (node->left_) {
-        node->left_->parent_ = node;
-    }
-
-    node->right_->left_ = new_right_left;
-    if (node->right_->left_) {
-        node->right_->left_->parent_ = node->right_;
-    }
-
-    node->right_->right_ = new_right_right;
-    if (node->right_->right_) {
-        node->right_->right_->parent_ = node->right_;
-    }
-
-    SetHeight(node->right_);
-    SetHeight(node);
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::LeftRotate(AVLTree::Node *node) {
-    Node * new_right = node->right_->right_;
-    Node * new_left_left = node->left_;
-    Node * new_left_right = node->right_->left_;
-
-    SwapValue(node, node->right_);
-    node->left_ = node->right_;
-
-    node->right_ = new_right;
-    if (node->right_) {
-        node->right_->parent_ = node;
-    }
-
-    node->left_->right_ = new_left_right;
-    if (node->left_->right_)  {
-        node->left_->right_->parent_ = node->left_;
-    }
-
-    node->left_->left_ = new_left_left;
-    if (node->left_->left_)  {
-        node->left_->left_->parent_  = node->left_;
-    }
-
-    SetHeight(node->left_);
-    SetHeight(node);
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::Balance(Node *node) { // правила балансировки чтобы понять какой вид поворота нужен
-    int balance = GetBalance(node);
-    if (balance == -2) {
-        if(GetBalance(node->left_) == 1) LeftRotate(node->left_);
-        RightRotate(node);
-    } else if (balance == 2) {
-        if(GetBalance(node->right_) == -1) RightRotate(node->right_);
-        LeftRotate(node);
-    }
-}
-
 // Insert and Delete
 
 template<typename Key, typename Value>
-//std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(Key key, Value value)
 std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(const Key& key, Value value) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
     std::pair<Iterator, bool> return_value;
     if (root_ == nullptr) {
@@ -221,13 +111,6 @@ template<typename Key, typename Value>
 void AVLTree<Key, Value>::erase(AVLTree::iterator pos) {
     if (root_ == nullptr || pos.iter_node_ == nullptr) return;
     root_ = RecursiveDelete(root_, *pos);
-}
-
-
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::Delete(Key key) {
-    if (root_ == nullptr) return root_;
-    return root_ = RecursiveDelete(root_, key);
 }
 
 template<typename Key, typename Value>
@@ -276,7 +159,6 @@ void AVLTree<Key, Value>::PrintTree(Node* node, const std::string& prefix, bool 
     if (node == nullptr) {
         return;
     }
-
     std::cout << prefix;
     std::cout << (isLeft ? "├──" : "└──");
     std::cout << node->key_ << std::endl;
@@ -476,26 +358,123 @@ bool AVLTree<Key, Value>::Iterator::operator!=(const AVLTree::Iterator &it) {
     return iter_node_ != it.iter_node_;
 }
 
+///////////////////////////////////////SUPPORT
 
-// OLD WORKING REALIZATION
-//void AVLTree::RightRotate(AVLTree::Node *node) {
-//    Swap(node, node->left_);
-//    Node* tmp = node->right_;
-//    node->right_ = node->left_;
-//    node->left_ = node->right_->left_;
-//    node->right_->left_ = node->right_->right_;
-//    node->right_->right_ = tmp;
-//    SetHeight(node->right_);
-//    SetHeight(node);
-//}
-//
-//void AVLTree::LeftRotate(AVLTree::Node *node) {
-//    Swap(node, node->right_);
-//    Node* tmp = node->left_;
-//    node->left_ = node->right_;
-//    node->right_ = node->left_->right_;
-//    node->left_->right_ =  node->left_->left_;
-//    node->left_->left_ = tmp;
-//    SetHeight(node->left_);
-//    SetHeight(node);
-//}
+
+// КОНСРУКТОР ДЛЯ УЗЛОВ
+
+template<typename Key, typename Value>
+AVLTree<Key, Value>::Node::Node(Key key, Value value)  : key_(key), value_(value) {}
+
+template<typename Key, typename Value>
+AVLTree<Key, Value>::Node::Node(Key key, Value value, Node* node)   : key_(key), value_(value), parent_(node) {}
+
+// Удаление дерева и копирование
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node, AVLTree::Node *parent) { // АЛГОРИТМ КОПИРОВАНИЯ
+    if (node == nullptr) return nullptr;
+    Node *new_node = new Node(node->key_, node->value_, parent);
+    new_node->left_ = CopyTree(node->left_, new_node);
+    new_node->right_ = CopyTree(node->right_, new_node);
+    return new_node;
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::FreeNode(Node* node) { // РЕКУРСИЯ ДЛЯ УДАЛЕНИЯ
+    if (node == nullptr) return;
+    FreeNode(node->left_);
+    FreeNode(node->right_);
+    delete node;
+}
+
+// Support For Balancing
+
+template<typename Key, typename Value>
+int AVLTree<Key, Value>::GetHeight(AVLTree::Node *node) {
+    return node == nullptr ? -1 : node->height_; // У несуществуюшей ноды высота по правилам -1 иначе мы возьмем высоту у существуюшей ноды
+}
+
+template<typename Key, typename Value>
+int AVLTree<Key, Value>::GetBalance(AVLTree::Node *node) {
+    return node == nullptr ? 0 : GetHeight(node->right_)  - GetHeight(node->left_); // У несуществуюшей ноды баланс фактор по правилам 0 иначе мы считаем баланс по формуле
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::SetHeight(AVLTree::Node *node) {
+    node->height_ = std::max(GetHeight(node->left_), GetHeight(node->right_)) + 1; // вычисление высоты для существующей ноды
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::SwapValue(AVLTree::Node *a, AVLTree::Node *b) { // Свап только значений
+    std::swap(a->key_, b->key_);
+    std::swap(a->value_, b->value_);
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::RightRotate(AVLTree::Node *node) {
+    Node * new_left = node->left_->left_;
+    Node * new_right_right = node->right_;
+    Node * new_right_left = node->left_->right_;
+
+    SwapValue(node, node->left_);
+    node->right_ = node->left_;
+
+    node->left_ = new_left;
+    if (node->left_) {
+        node->left_->parent_ = node;
+    }
+
+    node->right_->left_ = new_right_left;
+    if (node->right_->left_) {
+        node->right_->left_->parent_ = node->right_;
+    }
+
+    node->right_->right_ = new_right_right;
+    if (node->right_->right_) {
+        node->right_->right_->parent_ = node->right_;
+    }
+
+    SetHeight(node->right_);
+    SetHeight(node);
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::LeftRotate(AVLTree::Node *node) {
+    Node * new_right = node->right_->right_;
+    Node * new_left_left = node->left_;
+    Node * new_left_right = node->right_->left_;
+
+    SwapValue(node, node->right_);
+    node->left_ = node->right_;
+
+    node->right_ = new_right;
+    if (node->right_) {
+        node->right_->parent_ = node;
+    }
+
+    node->left_->right_ = new_left_right;
+    if (node->left_->right_)  {
+        node->left_->right_->parent_ = node->left_;
+    }
+
+    node->left_->left_ = new_left_left;
+    if (node->left_->left_)  {
+        node->left_->left_->parent_  = node->left_;
+    }
+
+    SetHeight(node->left_);
+    SetHeight(node);
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::Balance(Node *node) { // правила балансировки чтобы понять какой вид поворота нужен
+    int balance = GetBalance(node);
+    if (balance == -2) {
+        if(GetBalance(node->left_) == 1) LeftRotate(node->left_);
+        RightRotate(node);
+    } else if (balance == 2) {
+        if(GetBalance(node->right_) == -1) RightRotate(node->right_);
+        LeftRotate(node);
+    }
+}
