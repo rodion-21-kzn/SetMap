@@ -7,22 +7,27 @@
 #include <set>
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#include <initializer_list>
 
 int main() {
+    AVLTree<int, int> myTree({1,1}, {2,2});
+    AVLTree<int,int>::Iterator it;
+    AVLTree<int,int> test;
+    test.Insert(1,1);
+    test.Insert(2,2);
+    test.Insert(3,3);
+    test.Insert(11,11);
+    test.Insert(21,21);
+    test.Insert(-1,-1);
+    test.Insert(13,13);
 
+    it = test.begin();
 
-//    std::set<std::string> test1;
-//    std::set<std::string>::iterator it;
-//    test1.insert("hui2");
-//    test1.insert("hui1");
-//    it = test1.begin();
-//    for (;it != test1.end(); ++it) {
-//        std::cout << *it << std::endl;
-//    }
-//
-//    it = test1.end();
-//    std::cout << *it << std::endl;
-//    std::cout << "STOP" << std::endl;
+    for(;it != test.end(); ++it) {
+        std::cout << *it << std::endl;
+    }
+
+    test.PrintBinaryTree();
 }
 
 // КОНСТРУКТОРЫ ДЛЯ ДЕРЕВА / ДЕСТРУКТОР / ОПЕРАТОРЫ
@@ -65,7 +70,54 @@ AVLTree<Key, Value> &AVLTree<Key, Value>::operator=(const AVLTree &other) {
     return *this;
 }
 
-// Insert and Delete
+// BEGIN AND END
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::begin() {
+    return AVLTree::Iterator(GetMin(root_));
+}
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::end() {
+    if (root_ == nullptr) return begin();
+
+    Node* last_node = GetMax(root_);
+    Iterator test(nullptr, last_node);
+    return test;
+}
+
+// SIZE
+
+template<typename Key, typename Value>
+bool AVLTree<Key, Value>::empty() {
+    return root_ == nullptr;
+}
+
+template<typename Key, typename Value>
+size_t AVLTree<Key, Value>::size() {
+    return RecursiveSize(root_);
+}
+
+template<typename Key, typename Value>
+size_t AVLTree<Key, Value>::max_size() {
+    int mib[] = {CTL_HW, HW_MEMSIZE};
+    uint64_t physicalMemory;
+    size_t length = sizeof(physicalMemory);
+    if (sysctl(mib, 2, &physicalMemory, &length, nullptr, 0) != 0) {
+        throw std::logic_error("no access to memory");
+    }
+    return std::numeric_limits<size_t>::max() / sizeof(Key)  ;
+//    return std::numeric_limits<std::size_t>::max() / (physicalMemory / (1024 * 1024 * 1024) / sizeof(Key));
+}
+
+
+// INSERT and DELETE and CLEAR
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::clear() {
+    if (root_ != nullptr) FreeNode(root_);
+    root_ = nullptr;
+}
 
 template<typename Key, typename Value>
 std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(const Key& key, Value value) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
@@ -83,117 +135,13 @@ std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Inse
 }
 
 template<typename Key, typename Value>
-bool AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, const Key& key, Value value) { // Рекурсивная вставка в дерево с добавленной логикой понимания произошла ли вставка на самом деле, возвращает также указатель на ноду
-    bool check_insert = false;
-    if (key < node->key_) {
-        if (node->left_ == nullptr) {
-            node->left_ = new Node(key, value, node);
-            check_insert = true;
-        } else {
-            check_insert = RecursiveInsert(node->left_, key, value);
-        }
-    } else if (key > node->key_) {
-        if (node->right_ == nullptr) {
-            node->right_ = new Node(key, value, node);
-            check_insert = true;
-        } else {
-            check_insert = RecursiveInsert(node->right_, key, value);
-        }
-    } else if (key == node->key_) {
-        return check_insert; // инсерт не произошел потому что такой ключ был в дереве
-    }
-    SetHeight(node);
-    Balance(node);
-    return check_insert;
-}
-
-template<typename Key, typename Value>
 void AVLTree<Key, Value>::erase(AVLTree::iterator pos) {
     if (root_ == nullptr || pos.iter_node_ == nullptr) return;
     root_ = RecursiveDelete(root_, *pos);
 }
 
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveDelete(AVLTree::Node *node, Key key) {
-    if (node == nullptr) return nullptr;
-    if (key < node->key_) {
-        node->left_ = RecursiveDelete(node->left_, key);
-    } else if (key > node->key_) {
-        node->right_ = RecursiveDelete(node->right_, key);
-    } else {
-        if (node->left_ == nullptr || node->right_ == nullptr) {
-            Node* node_right = node->right_;
-            Node* node_left = node->left_;
-            Node* node_parent = node->parent_;
-            delete node;
-            if (node_left == nullptr) {
-                node = node_right;
-            } else {
-                node = node_left;
-            }
-            if (node != nullptr) node->parent_ = node_parent;
-        } else {
-            Node* min_in_right = GetMin(node->right_);
-            node->key_ = min_in_right->key_;
-            node->value_ = min_in_right->value_;
-            node->right_ = RecursiveDelete(node->right_, min_in_right->key_);
-        }
-    }
-    if (node != nullptr) {
-        SetHeight(node);
-        Balance(node);
-    }
-    return node;
-}
 
-
-// Printing
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::PrintBinaryTree() {
-    PrintTree(root_, "", false);
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::PrintTree(Node* node, const std::string& prefix, bool isLeft) {
-    if (node == nullptr) {
-        return;
-    }
-    std::cout << prefix;
-    std::cout << (isLeft ? "├──" : "└──");
-    std::cout << node->key_ << std::endl;
-
-    // Calculate the new prefix for child nodes
-    std::string childPrefix = prefix + (isLeft ? "│   " : "    ");
-
-    PrintTree(node->left_, childPrefix, true);
-    PrintTree(node->right_, childPrefix, false);
-}
-
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::GetMin(AVLTree::Node *node) {
-    if (node == nullptr) return nullptr;
-    if (node->left_ == nullptr) return node;
-    return GetMin(node->left_);
-}
-
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::GetMax(AVLTree::Node *node) {
-    if (node == nullptr) return nullptr;
-    if (node->right_ == nullptr) return node;
-    return GetMax(node->right_);
-}
-
-
-
-
-////////////////////////////////////////////
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::clear() {
-    if (root_ != nullptr) FreeNode(root_);
-    root_ = nullptr;
-}
+// SWAP AND MERGE
 
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::swap(AVLTree &other) {
@@ -202,64 +150,16 @@ void AVLTree<Key, Value>::swap(AVLTree &other) {
 
 template<typename Key, typename Value>
 void AVLTree<Key, Value>::merge(AVLTree &other) {
-
     AVLTree const_tree(other);
-
     Iterator const_it = const_tree.begin();
     Iterator it = other.begin();
-
-
     for (; const_it != const_tree.end(); ++const_it) {
-
         std::pair<Iterator, bool> pr = Insert(*const_it, *const_it);
         if (pr.second) other.erase(pr.first);
-
     }
 }
 
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::begin() {
-    return AVLTree::Iterator(GetMin(root_));
-}
-
-template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::end() {
-    if (root_ == nullptr) return begin();
-
-    Node* last_node = GetMax(root_);
-    Iterator test(nullptr, last_node);
-    return test;
-}
-
-template<typename Key, typename Value>
-bool AVLTree<Key, Value>::empty() {
-    return root_ == nullptr;
-}
-
-template<typename Key, typename Value>
-size_t AVLTree<Key, Value>::size() {
-    return RecursiveSize(root_);
-}
-
-template<typename Key, typename Value>
-size_t AVLTree<Key, Value>::RecursiveSize(AVLTree::Node *node) {
-    if (node == nullptr) return 0;
-    size_t left_size = RecursiveSize(node->left_);
-    size_t right_size = RecursiveSize(node->right_);
-    return 1 + left_size + right_size;
-}
-
-template<typename Key, typename Value>
-size_t AVLTree<Key, Value>::max_size() {
-    int mib[] = {CTL_HW, HW_MEMSIZE};
-    uint64_t physicalMemory;
-    size_t length = sizeof(physicalMemory);
-    if (sysctl(mib, 2, &physicalMemory, &length, nullptr, 0) != 0) {
-        throw std::logic_error("no access to memory");
-    }
-    return std::numeric_limits<size_t>::max() / sizeof(Key)  ;
-//    return std::numeric_limits<std::size_t>::max() / (physicalMemory / (1024 * 1024 * 1024) / sizeof(Key));
-}
+// FIND AND CONTAINS
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::iterator AVLTree<Key, Value>::find(const Key &key) {
@@ -268,20 +168,10 @@ typename AVLTree<Key, Value>::iterator AVLTree<Key, Value>::find(const Key &key)
 }
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveFind(AVLTree::Node *node, const Key &key) {
-    if (node == nullptr || node->key_ == key) return node;
-    if (key > node->key_) return RecursiveFind(node->right_, key);
-    if (key < node->key_) return RecursiveFind(node->left_, key);
-}
-
-
-
-template<typename Key, typename Value>
 bool AVLTree<Key, Value>::contains(const Key &key) {
     Node* contain_node = RecursiveFind(root_, key);
     return !(contain_node == nullptr);
 }
-
 
 // ITERATOR
 
@@ -358,7 +248,7 @@ bool AVLTree<Key, Value>::Iterator::operator!=(const AVLTree::Iterator &it) {
     return iter_node_ != it.iter_node_;
 }
 
-///////////////////////////////////////SUPPORT
+//SUPPORT
 
 
 // КОНСРУКТОР ДЛЯ УЗЛОВ
@@ -369,7 +259,7 @@ AVLTree<Key, Value>::Node::Node(Key key, Value value)  : key_(key), value_(value
 template<typename Key, typename Value>
 AVLTree<Key, Value>::Node::Node(Key key, Value value, Node* node)   : key_(key), value_(value), parent_(node) {}
 
-// Удаление дерева и копирование
+// SUPPORT FOR AVL_TREE CONSTRUCTORS
 
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::CopyTree(AVLTree::Node *node, AVLTree::Node *parent) { // АЛГОРИТМ КОПИРОВАНИЯ
@@ -388,7 +278,7 @@ void AVLTree<Key, Value>::FreeNode(Node* node) { // РЕКУРСИЯ ДЛЯ УД
     delete node;
 }
 
-// Support For Balancing
+// AVL BALANCE
 
 template<typename Key, typename Value>
 int AVLTree<Key, Value>::GetHeight(AVLTree::Node *node) {
@@ -478,3 +368,119 @@ void AVLTree<Key, Value>::Balance(Node *node) { // правила баланси
         LeftRotate(node);
     }
 }
+
+// PRINTING
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::PrintBinaryTree() {
+    PrintTree(root_, "", false);
+}
+
+template<typename Key, typename Value>
+void AVLTree<Key, Value>::PrintTree(Node* node, const std::string& prefix, bool isLeft) {
+    if (node == nullptr) {
+        return;
+    }
+    std::cout << prefix;
+    std::cout << (isLeft ? "├──" : "└──");
+    std::cout << node->key_ << std::endl;
+
+    // Calculate the new prefix for child nodes
+    std::string childPrefix = prefix + (isLeft ? "│   " : "    ");
+
+    PrintTree(node->left_, childPrefix, true);
+    PrintTree(node->right_, childPrefix, false);
+}
+
+// MIN AND MAX IN TREE
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::GetMin(AVLTree::Node *node) {
+    if (node == nullptr) return nullptr;
+    if (node->left_ == nullptr) return node;
+    return GetMin(node->left_);
+}
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Node *AVLTree<Key, Value>::GetMax(AVLTree::Node *node) {
+    if (node == nullptr) return nullptr;
+    if (node->right_ == nullptr) return node;
+    return GetMax(node->right_);
+}
+
+// RECURSIVE SUPPORT FUNCTIONS
+
+template<typename Key, typename Value>
+size_t AVLTree<Key, Value>::RecursiveSize(AVLTree::Node *node) {
+    if (node == nullptr) return 0;
+    size_t left_size = RecursiveSize(node->left_);
+    size_t right_size = RecursiveSize(node->right_);
+    return 1 + left_size + right_size;
+}
+
+
+template<typename Key, typename Value>
+bool AVLTree<Key, Value>::RecursiveInsert(AVLTree::Node *node, const Key& key, Value value) { // Рекурсивная вставка в дерево с добавленной логикой понимания произошла ли вставка на самом деле, возвращает также указатель на ноду
+    bool check_insert = false;
+    if (key < node->key_) {
+        if (node->left_ == nullptr) {
+            node->left_ = new Node(key, value, node);
+            check_insert = true;
+        } else {
+            check_insert = RecursiveInsert(node->left_, key, value);
+        }
+    } else if (key > node->key_) {
+        if (node->right_ == nullptr) {
+            node->right_ = new Node(key, value, node);
+            check_insert = true;
+        } else {
+            check_insert = RecursiveInsert(node->right_, key, value);
+        }
+    } else if (key == node->key_) {
+        return check_insert; // инсерт не произошел потому что такой ключ был в дереве
+    }
+    SetHeight(node);
+    Balance(node);
+    return check_insert;
+}
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveDelete(AVLTree::Node *node, Key key) {
+    if (node == nullptr) return nullptr;
+    if (key < node->key_) {
+        node->left_ = RecursiveDelete(node->left_, key);
+    } else if (key > node->key_) {
+        node->right_ = RecursiveDelete(node->right_, key);
+    } else {
+        if (node->left_ == nullptr || node->right_ == nullptr) {
+            Node* node_right = node->right_;
+            Node* node_left = node->left_;
+            Node* node_parent = node->parent_;
+            delete node;
+            if (node_left == nullptr) {
+                node = node_right;
+            } else {
+                node = node_left;
+            }
+            if (node != nullptr) node->parent_ = node_parent;
+        } else {
+            Node* min_in_right = GetMin(node->right_);
+            node->key_ = min_in_right->key_;
+            node->value_ = min_in_right->value_;
+            node->right_ = RecursiveDelete(node->right_, min_in_right->key_);
+        }
+    }
+    if (node != nullptr) {
+        SetHeight(node);
+        Balance(node);
+    }
+    return node;
+}
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveFind(AVLTree::Node *node, const Key &key) {
+    if (node == nullptr || node->key_ == key) return node;
+    if (key > node->key_) return RecursiveFind(node->right_, key);
+    if (key < node->key_) return RecursiveFind(node->left_, key);
+}
+

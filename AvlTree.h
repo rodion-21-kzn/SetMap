@@ -10,9 +10,10 @@
 
 template<typename Key, typename Value>
 class AVLTree {
+private:
+    struct Node;
 public:
     class Iterator;
-    struct Node;
 
     using key_type = Key;
     using value_type = Value;
@@ -21,19 +22,8 @@ public:
     using iterator = Iterator;
     using const_iterator = const Iterator;
 
-    struct Node {
-        Key key_;
-        Value value_;
-        Node* left_ = nullptr;
-        Node* right_ = nullptr;
-        Node* parent_ = nullptr;
-        int height_ = 0;
-        Node(Key key, Value value);
-        Node(Key key, Value value, Node* parent);
-    };
 
     class Iterator {
-
     public:
         Iterator();
         Iterator(Node* node, Node* past_node = nullptr);
@@ -43,7 +33,6 @@ public:
         bool operator==(const Iterator& it);
         bool operator!=(const Iterator& it);
 
-        friend class AVLTree;
     protected:
         Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
         Node* iter_past_node_;
@@ -68,34 +57,39 @@ public:
 
     void clear();
     std::pair<iterator, bool> Insert(const Key& key, Value value);
-
     void erase(iterator pos);
+
     void swap(AVLTree& other);
     void merge(AVLTree& other);
 
     iterator find(const Key& key);
     bool contains(const Key& key);
 
-
-    Node* Delete(Key key); // СТАРАЯ ФУНКЦИЯ ОБЕРТКА - УДАЛИТЬ В РЕЛИЗЕ тк есть заменя - Erase
     void PrintBinaryTree(); // ТОЖЕ удалить
 
-
 private:
+    struct Node {
+        Node(Key key, Value value);
+        Node(Key key, Value value, Node* parent);
+        Key key_;
+        Value value_;
+        Node* left_ = nullptr;
+        Node* right_ = nullptr;
+        Node* parent_ = nullptr;
+        int height_ = 0;
+    };
+
     Node* root_;
-
-    // Support
-    static Node* GetMin(Node* node);
-    static Node* GetMax(Node* node);
-    void SwapValue(Node* a, Node* b); // swap only key and value
+    // SUPPORT FOR CONSTRUCTORS
     void FreeNode(Node* node);
-
     Node* CopyTree(Node* node, Node* parent);
 
-    // Print
+    // PRINT
     void PrintTree(Node* root, const std::string& prefix, bool isLeft); // УДАЛИТЬ
 
-    // Rotation
+    // AVL BALANCE
+    void SwapValue(Node* a, Node* b); // swap only key and value
+
     void RightRotate(Node* node);
     void LeftRotate(Node* node);
     void Balance(Node* node);
@@ -103,12 +97,17 @@ private:
     int GetHeight(Node* node);
     void SetHeight(Node* node);
 
-    // Insert && Delete && Size
+    // MIN && MAX
+    static Node* GetMin(Node* node);
+    static Node* GetMax(Node* node);
+
+    // RECURSIVE SUPPORT FUNCTIONS
     bool RecursiveInsert(Node* node, const Key& key, Value value);
     Node* RecursiveDelete(Node* node, Key key);
     size_t RecursiveSize(Node* node);
-
     Node* RecursiveFind(Node* node, const Key& key);
+
 };
+
 
 #endif //CONTAINERS_AVLTREE_H
