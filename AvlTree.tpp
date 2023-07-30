@@ -4,36 +4,42 @@
 
 #include "AvlTree.h"
 
-#include <set>
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #include <initializer_list>
 
-int main() {
-    AVLTree<int, int> myTree({1,1}, {2,2});
-    AVLTree<int,int>::Iterator it;
-    AVLTree<int,int> test;
-    test.Insert(1,1);
-    test.Insert(2,2);
-    test.Insert(3,3);
-    test.Insert(11,11);
-    test.Insert(21,21);
-    test.Insert(-1,-1);
-    test.Insert(13,13);
-
-    it = test.begin();
-
-    for(;it != test.end(); ++it) {
-        std::cout << *it << std::endl;
-    }
-
-    test.PrintBinaryTree();
-}
+//int main() {
+//
+//    std::set<int> const test = {1,2,3};
+//    std::set<int>::iterator it;
+//    it = test.begin();
+//    ++it;
+//    std::cout << *it;
+//    AVLTree<int, int> myTree({1,1}, {2,2});
+//    AVLTree<int,int>::Iterator it;
+//    AVLTree<int,int> test;
+//    test.Insert(1,1);
+//    test.Insert(2,2);
+//    test.Insert(3,3);
+//    test.Insert(11,11);
+//    test.Insert(21,21);
+//    test.Insert(-1,-1);
+//    test.Insert(13,13);
+//
+//    it = test.begin();
+//
+//    for(;it != test.end(); ++it) {
+//        std::cout << *it << std::endl;
+//    }
+//
+//    test.PrintBinaryTree();
+//}
 
 // КОНСТРУКТОРЫ ДЛЯ ДЕРЕВА / ДЕСТРУКТОР / ОПЕРАТОРЫ
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::AVLTree() : root_(nullptr) {}
+
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::AVLTree(const AVLTree &other) {
@@ -48,7 +54,7 @@ AVLTree<Key, Value>::AVLTree(AVLTree &&other) noexcept {
 
 template<typename Key, typename Value>
 AVLTree<Key, Value>::~AVLTree() {
-    clear();
+    Clear();
 }
 
 template<typename Key, typename Value>
@@ -73,13 +79,13 @@ AVLTree<Key, Value> &AVLTree<Key, Value>::operator=(const AVLTree &other) {
 // BEGIN AND END
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::begin() {
+typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Begin() {
     return AVLTree::Iterator(GetMin(root_));
 }
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::end() {
-    if (root_ == nullptr) return begin();
+typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::End() {
+    if (root_ == nullptr) return Begin();
 
     Node* last_node = GetMax(root_);
     Iterator test(nullptr, last_node);
@@ -89,53 +95,53 @@ typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::end() {
 // SIZE
 
 template<typename Key, typename Value>
-bool AVLTree<Key, Value>::empty() {
+bool AVLTree<Key, Value>::Empty() {
     return root_ == nullptr;
 }
 
 template<typename Key, typename Value>
-size_t AVLTree<Key, Value>::size() {
+size_t AVLTree<Key, Value>::Size() {
     return RecursiveSize(root_);
 }
 
-template<typename Key, typename Value>
-size_t AVLTree<Key, Value>::max_size() {
-    int mib[] = {CTL_HW, HW_MEMSIZE};
-    uint64_t physicalMemory;
-    size_t length = sizeof(physicalMemory);
-    if (sysctl(mib, 2, &physicalMemory, &length, nullptr, 0) != 0) {
-        throw std::logic_error("no access to memory");
-    }
-    return std::numeric_limits<size_t>::max() / sizeof(Key)  ;
-//    return std::numeric_limits<std::size_t>::max() / (physicalMemory / (1024 * 1024 * 1024) / sizeof(Key));
-}
+//template<typename Key, typename Value>
+//size_t AVLTree<Key, Value>::Max_size() {
+//    int mib[] = {CTL_HW, HW_MEMSIZE};
+//    uint64_t physicalMemory;
+//    size_t length = sizeof(physicalMemory);
+//    if (sysctl(mib, 2, &physicalMemory, &length, nullptr, 0) != 0) {
+//        throw std::logic_error("no access to memory");
+//    }
+//    return std::numeric_limits<size_t>::max() / sizeof(Key)  ;
+////    return std::numeric_limits<std::size_t>::max() / (physicalMemory / (1024 * 1024 * 1024) / sizeof(Key));
+//}
 
 
 // INSERT and DELETE and CLEAR
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::clear() {
+void AVLTree<Key, Value>::Clear() {
     if (root_ != nullptr) FreeNode(root_);
     root_ = nullptr;
 }
 
 template<typename Key, typename Value>
-std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(const Key& key, Value value) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
+std::pair<typename AVLTree<Key,Value>::Iterator, bool> AVLTree<Key, Value>::Insert(const Key& key) { // Обычный инсерт обертка для основной вставки с алгоритмом, и возвращаемые значения по таску
     std::pair<Iterator, bool> return_value;
     if (root_ == nullptr) {
-        root_ = new Node(key, value);
+        root_ = new Node(key, key);
         return_value.first = Iterator(root_);
         return_value.second = true;
     } else {
-        bool check_insert = RecursiveInsert(root_, key, value);
-        return_value.first = find(key); // НАДО НАПИСАТЬ ФУНКЦИЮ FIND
+        bool check_insert = RecursiveInsert(root_, key, key);
+        return_value.first = Find(key); // НАДО НАПИСАТЬ ФУНКЦИЮ FIND
         return_value.second = check_insert;
     }
     return return_value;
 }
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::erase(AVLTree::iterator pos) {
+void AVLTree<Key, Value>::Erase(AVLTree::iterator pos) {
     if (root_ == nullptr || pos.iter_node_ == nullptr) return;
     root_ = RecursiveDelete(root_, *pos);
 }
@@ -144,31 +150,31 @@ void AVLTree<Key, Value>::erase(AVLTree::iterator pos) {
 // SWAP AND MERGE
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::swap(AVLTree &other) {
+void AVLTree<Key, Value>::Swap(AVLTree &other) {
     std::swap(root_, other.root_);
 }
 
 template<typename Key, typename Value>
-void AVLTree<Key, Value>::merge(AVLTree &other) {
+void AVLTree<Key, Value>::Merge(AVLTree &other) {
     AVLTree const_tree(other);
-    Iterator const_it = const_tree.begin();
-    Iterator it = other.begin();
-    for (; const_it != const_tree.end(); ++const_it) {
-        std::pair<Iterator, bool> pr = Insert(*const_it, *const_it);
-        if (pr.second) other.erase(pr.first);
+    Iterator const_it = const_tree.Begin();
+    Iterator it = other.Begin();
+    for (; const_it != const_tree.End(); ++const_it) {
+        std::pair<Iterator, bool> pr = Insert(*const_it);
+        if (pr.second) other.Erase(pr.first);
     }
 }
 
 // FIND AND CONTAINS
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::iterator AVLTree<Key, Value>::find(const Key &key) {
+typename AVLTree<Key, Value>::iterator AVLTree<Key, Value>::Find(const Key &key) {
     Node* exact_node = RecursiveFind(root_, key);
     return Iterator(exact_node);
 }
 
 template<typename Key, typename Value>
-bool AVLTree<Key, Value>::contains(const Key &key) {
+bool AVLTree<Key, Value>::Contains(const Key &key) {
     Node* contain_node = RecursiveFind(root_, key);
     return !(contain_node == nullptr);
 }
@@ -208,7 +214,7 @@ template<typename Key, typename Value>
 AVLTree<Key, Value>::Iterator::Iterator(AVLTree::Node *node, AVLTree::Node *past_node) : iter_node_(node), iter_past_node_(past_node) {}
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator++() {
+typename AVLTree<Key, Value>::Iterator& AVLTree<Key, Value>::Iterator::operator++() {
     Node* tmp;
     if (iter_node_ != nullptr) {
         tmp = GetMax(iter_node_);
@@ -221,7 +227,15 @@ typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator++
 }
 
 template<typename Key, typename Value>
-typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator--() {
+typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator++(int) {
+    Iterator temp = *this;
+    operator++();
+    return temp;
+}
+
+
+template<typename Key, typename Value>
+typename AVLTree<Key, Value>::Iterator& AVLTree<Key, Value>::Iterator::operator--() {
     if (iter_node_ == nullptr && iter_past_node_ != nullptr) {
         *this = iter_past_node_;
         return *this;
@@ -231,7 +245,15 @@ typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator--
 }
 
 template<typename Key, typename Value>
-Value AVLTree<Key, Value>::Iterator::operator*() {
+typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator--(int) {
+    Iterator temp = *this;
+    operator--();
+    return temp;
+}
+
+
+template<typename Key, typename Value>
+const Value& AVLTree<Key, Value>::Iterator::operator*() {
     if (iter_node_ == nullptr) {
         return 0;
     }
@@ -480,7 +502,10 @@ typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveDelete(AVLTree
 template<typename Key, typename Value>
 typename AVLTree<Key, Value>::Node* AVLTree<Key, Value>::RecursiveFind(AVLTree::Node *node, const Key &key) {
     if (node == nullptr || node->key_ == key) return node;
-    if (key > node->key_) return RecursiveFind(node->right_, key);
-    if (key < node->key_) return RecursiveFind(node->left_, key);
+    if (key > node->key_) {
+        return RecursiveFind(node->right_, key);
+    } else {
+        return RecursiveFind(node->left_, key);
+    }
 }
 

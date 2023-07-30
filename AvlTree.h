@@ -7,10 +7,9 @@
 
 #include <iostream>
 
-
 template<typename Key, typename Value>
 class AVLTree {
-private:
+protected:
     struct Node;
 public:
     class Iterator;
@@ -20,20 +19,24 @@ public:
     using reference = value_type &;
     using const_reference = const value_type &;
     using iterator = Iterator;
-    using const_iterator = const Iterator;
+//    using const_iterator = const Iterator;
+    using size_type = size_t;
 
 
     class Iterator {
+
     public:
         Iterator();
         Iterator(Node* node, Node* past_node = nullptr);
-        Iterator operator++();
-        Iterator operator--();
-        Value operator*();
+        Iterator& operator++();
+        Iterator operator++(int);
+        Iterator& operator--();
+        Iterator operator--(int);
+        const Value& operator*();
         bool operator==(const Iterator& it);
         bool operator!=(const Iterator& it);
-
-    protected:
+        friend class AVLTree<Key, Value>;
+    private:
         Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
         Node* iter_past_node_;
         Node* MoveForward(Node* node);
@@ -41,33 +44,32 @@ public:
     };
 
     AVLTree();
-//    AVLTree(std::initializer_list<int> const &items);
     AVLTree(const AVLTree &other);
     AVLTree(AVLTree &&other) noexcept;
     ~AVLTree();
     AVLTree& operator=(AVLTree &&other) noexcept;
     AVLTree& operator=(const AVLTree &other);
 
-     Iterator begin();
-     Iterator end();
+     Iterator Begin();
+     Iterator End();
 
-    bool empty();
-    size_t size();
-    size_t max_size();
+    bool Empty();
+    size_t Size();
+//    size_t Max_size();
 
-    void clear();
-    std::pair<iterator, bool> Insert(const Key& key, Value value);
-    void erase(iterator pos);
+    void Clear();
+    std::pair<iterator, bool> Insert(const Key& key);
+    void Erase(iterator pos);
 
-    void swap(AVLTree& other);
-    void merge(AVLTree& other);
+    void Swap(AVLTree& other);
+    void Merge(AVLTree& other);
 
-    iterator find(const Key& key);
-    bool contains(const Key& key);
+    iterator Find(const Key& key);
+    bool Contains(const Key& key);
 
     void PrintBinaryTree(); // ТОЖЕ удалить
 
-private:
+protected:
     struct Node {
         Node(Key key, Value value);
         Node(Key key, Value value, Node* parent);
@@ -110,4 +112,7 @@ private:
 };
 
 
+
+
+#include "AvlTree.tpp"
 #endif //CONTAINERS_AVLTREE_H
