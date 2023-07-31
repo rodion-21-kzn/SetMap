@@ -7,4 +7,4 @@ include_directories(.)
 
 add_executable(Containers
         AvlTree.tpp
-        Set.cpp)
+        Map.cpp Map.h)

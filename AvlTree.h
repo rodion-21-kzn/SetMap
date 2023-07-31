@@ -7,19 +7,21 @@
 
 #include <iostream>
 
+
 template<typename Key, typename Value>
 class AVLTree {
 protected:
     struct Node;
 public:
     class Iterator;
+    class ConstIterator;
 
     using key_type = Key;
     using value_type = Value;
     using reference = value_type &;
     using const_reference = const value_type &;
     using iterator = Iterator;
-//    using const_iterator = const Iterator;
+    using const_iterator = ConstIterator;
     using size_type = size_t;
 
 
@@ -44,6 +46,7 @@ public:
     };
 
     class ConstIterator : Iterator {
+    public:
         ConstIterator() : Iterator(){};
         const Value& operator*() const {return Iterator::operator*();};
     };
@@ -69,12 +72,13 @@ public:
     void Swap(AVLTree& other);
     void Merge(AVLTree& other);
 
-    iterator Find(const Key& key);
+
     bool Contains(const Key& key);
 
     void PrintBinaryTree(); // ТОЖЕ удалить
 
 protected:
+    iterator Find(const Key& key);
     struct Node {
         Node(Key key, Value value);
         Node(Key key, Value value, Node* parent);
@@ -84,6 +88,7 @@ protected:
         Node* right_ = nullptr;
         Node* parent_ = nullptr;
         int height_ = 0;
+        friend class AVLTree<Key, Value>;
     };
 
     Node* root_;

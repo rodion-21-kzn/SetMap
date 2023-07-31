@@ -9,23 +9,8 @@
 
 
 int main () {
-    std::set<std::string> tmp;
-    tmp.insert("str");
-    tmp.insert("meow");
-    std::set<std::string> const test = tmp;
-    auto nonconst_it = tmp.begin();
-    auto it = test.begin();
-    *nonconst_it->c_str();
-    *it->c_str();
-
-
-//    Set<int> test1 = {5,6};
-//    Set<int> test2 = {1,2,3};
-//    Set<int>::iterator it;
-//    it = test1.Find(5);
-//    *it = 5;
-//
-//    std::cout << test2.Contains(4);
+    Set<int> st = {1,2,3};
+    st.Find();
 }
 
 template<typename Key>

@@ -16,6 +16,7 @@ public:
     using reference = value_type &;
     using const_reference = const Key &;
     using iterator = typename AVLTree<Key, Key>::Iterator;
+    using const_iterator = typename AVLTree<Key, Key>::ConstIterator;
     using size_type = size_t;
 
     Set() : AVLTree<Key, Key>(){};
@@ -25,6 +26,7 @@ public:
     Set& operator=(Set &&other) noexcept;
     Set& operator=(const Set &other);
 
+    iterator Find(const Key& key) {AVLTree<Key, Key>::Find(key);};
 
     ~Set() = default;
 
