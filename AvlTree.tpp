@@ -253,7 +253,7 @@ typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator--
 
 
 template<typename Key, typename Value>
-const Value& AVLTree<Key, Value>::Iterator::operator*() {
+Value& AVLTree<Key, Value>::Iterator::operator*() {
     if (iter_node_ == nullptr) {
         return 0;
     }
@@ -269,6 +269,7 @@ template<typename Key, typename Value>
 bool AVLTree<Key, Value>::Iterator::operator!=(const AVLTree::Iterator &it) {
     return iter_node_ != it.iter_node_;
 }
+
 
 //SUPPORT
 

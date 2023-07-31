@@ -24,7 +24,6 @@ public:
 
 
     class Iterator {
-
     public:
         Iterator();
         Iterator(Node* node, Node* past_node = nullptr);
@@ -32,15 +31,21 @@ public:
         Iterator operator++(int);
         Iterator& operator--();
         Iterator operator--(int);
-        const Value& operator*();
+        Value& operator*();
         bool operator==(const Iterator& it);
         bool operator!=(const Iterator& it);
         friend class AVLTree<Key, Value>;
-    private:
+
+    protected:
         Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
         Node* iter_past_node_;
         Node* MoveForward(Node* node);
         Node* MoveBack(Node* node);
+    };
+
+    class ConstIterator : Iterator {
+        ConstIterator() : Iterator(){};
+        const Value& operator*() const {return Iterator::operator*();};
     };
 
     AVLTree();
@@ -110,8 +115,6 @@ protected:
     Node* RecursiveFind(Node* node, const Key& key);
 
 };
-
-
 
 
 #include "AvlTree.tpp"
