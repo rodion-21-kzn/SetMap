@@ -36,8 +36,9 @@ namespace s21 {
 
         ~map() = default;
 
-//        iterator begin();
-//        iterator end();
+        iterator begin();
+        iterator end();
+        void merge(map &other);
 
 
         class MapIterator : public AVLTree<Key, T>::Iterator {

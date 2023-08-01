@@ -231,7 +231,7 @@ Value& AVLTree<Key, Value>::Iterator::operator*() {
         static Value fake_value{};
         return fake_value;
     }
-    return iter_node_->value_;
+    return iter_node_->key_; // тут было value - изменил из-за мапы
 }
 
 template<typename Key, typename Value>

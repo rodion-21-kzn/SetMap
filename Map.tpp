@@ -2,9 +2,9 @@
 // Created by Oznak Banshee on 7/31/23.
 //
 
-#include "Set.h"
+
 #include "Map.h"
-#include <map>
+
 
 namespace s21 {
 
@@ -55,13 +55,14 @@ namespace s21 {
 
     template<typename Key, typename T>
     typename map<Key, T>::value_type &map<Key, T>::MapIterator::operator*() {
+
         if (AVLTree<Key, T>::Iterator::iter_node_ == nullptr) {
             static value_type fake_value{};
             return fake_value;
         }
-        static std::pair<const key_type, mapped_type> pr = std::make_pair(AVLTree<Key, T>::Iterator::iter_node_->key_,
-                                                                          AVLTree<Key, T>::Iterator::iter_node_->value_);
-        return pr;
+        std::pair<const key_type, mapped_type> pr = std::make_pair(AVLTree<Key, T>::Iterator::iter_node_->key_,AVLTree<Key, T>::Iterator::iter_node_->value_);
+        std::pair<const key_type, mapped_type>& ref = pr;
+        return ref;
     }
 
     template<typename Key, typename T>
@@ -83,7 +84,12 @@ namespace s21 {
     template<typename Key, typename T>
     std::pair<typename map<Key, T>::iterator, bool> map<Key, T>::insert_or_assign(const Key &key, const T &obj) {
         auto it = find(key);
-        if (it != this->end()) AVLTree<Key, T>::erase(it);
+        if (it != this->end()) {
+            AVLTree<Key, T>::erase(it);
+            auto pr = insert(key, obj);
+            pr.second = false;
+            return pr;
+        }
         return insert(key, obj);
     }
 
@@ -98,19 +104,35 @@ namespace s21 {
     T &map<Key, T>::operator[](const Key &key) {
         auto it = find(key);
         if (it == nullptr) {
-            it = insert(std::make_pair(key, T()));
+            auto pr = insert(std::make_pair(key, T()));
+            it = pr.first;
         }
         return it.return_value();
     }
 
-//    template<typename Key, typename T>
-//    typename map<Key, T>::iterator map<Key, T>::begin() {
-//        return AVLTree<Key, T>::begin();
-//    }
-//
-//    template<typename Key, typename T>
-//    typename map<Key, T>::iterator map<Key, T>::end() {
-//        return AVLTree<Key, T>::end();
-//    }
+    template<typename Key, typename T>
+    typename map<Key, T>::iterator map<Key, T>::begin() {
+        return map<Key, T>::MapIterator(AVLTree<Key, T>::GetMin(AVLTree<Key, T>::root_));
+    }
 
+    template<typename Key, typename T>
+    typename map<Key, T>::iterator map<Key, T>::end() {
+        if (AVLTree<Key, T>::root_ == nullptr) return begin();
+
+        typename AVLTree<Key, T>::Node* last_node = AVLTree<Key, T>::GetMax(AVLTree<Key, T>::root_);
+        MapIterator test(nullptr, last_node);
+        return test;
+    }
+
+    template<typename Key, typename T>
+    void map<Key, T>::merge(map &other) {
+        map const_tree(other);
+        iterator const_it = const_tree.begin();
+        for (; const_it != const_tree.end(); ++const_it) {
+            auto key = (*const_it).first;
+            auto obj = (*const_it).second;
+            std::pair<iterator, bool> pr = insert(key, obj);
+            if (pr.second) other.erase(pr.first);
+        }
+    }
 }
