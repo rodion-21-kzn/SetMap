@@ -85,13 +85,13 @@
 		<Unit filename="/Users/oznakban/SetMap/AvlTree.tpp">
 			<Option target="Containers"/>
 		</Unit>
-		<Unit filename="/Users/oznakban/SetMap/Map.cpp">
-			<Option target="Containers"/>
-		</Unit>
 		<Unit filename="/Users/oznakban/SetMap/Map.h">
 			<Option target="Containers"/>
 		</Unit>
-		<Unit filename="/Users/oznakban/SetMap/test.cpp">
+		<Unit filename="/Users/oznakban/SetMap/Map.tpp">
+			<Option target="Containers"/>
+		</Unit>
+		<Unit filename="/Users/oznakban/SetMap/main.cpp">
 			<Option target="Containers"/>
 		</Unit>
 		<Unit filename="/Users/oznakban/SetMap/CMakeLists.txt">

@@ -4,27 +4,28 @@
 
 
 #include "Set.h"
-
-template<typename Key>
-Set<Key>::Set(const std::initializer_list<value_type> &items) {
-    for (auto i = items.begin(); i != items.end(); ++i) {
-        AVLTree<Key, Key>::Insert(*i);
+namespace s21 {
+    template<typename Key>
+    set<Key>::set(const std::initializer_list<value_type> &items) {
+        for (auto i = items.begin(); i != items.end(); ++i) {
+            AVLTree<Key, Key>::insert(*i);
+        }
     }
-}
 
-template<typename Key>
-Set<Key> &Set<Key>::operator=(Set &&other) noexcept {
-    if (this != &other) {
-        AVLTree<Key, Key>::operator=(std::move(other));
+    template<typename Key>
+    set<Key> &set<Key>::operator=(set &&other) noexcept {
+        if (this != &other) {
+            AVLTree<Key, Key>::operator=(std::move(other));
+        }
+        return *this;
     }
-    return *this;
-}
 
-template<typename Key>
-Set<Key> &Set<Key>::operator=(const Set &other) {
-    if (this != &other) {
-        AVLTree<Key, Key>::operator=(other);
+    template<typename Key>
+    set<Key> &set<Key>::operator=(const set &other) {
+        if (this != &other) {
+            AVLTree<Key, Key>::operator=(other);
+        }
+        return *this;
     }
-    return *this;
-}
 
+}

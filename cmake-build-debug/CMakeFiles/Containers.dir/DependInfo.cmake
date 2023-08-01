@@ -8,8 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/oznakban/SetMap/Map.cpp" "CMakeFiles/Containers.dir/Map.cpp.o" "gcc" "CMakeFiles/Containers.dir/Map.cpp.o.d"
-  "/Users/oznakban/SetMap/test.cpp" "CMakeFiles/Containers.dir/test.cpp.o" "gcc" "CMakeFiles/Containers.dir/test.cpp.o.d"
+  "/Users/oznakban/SetMap/main.cpp" "CMakeFiles/Containers.dir/main.cpp.o" "gcc" "CMakeFiles/Containers.dir/main.cpp.o.d"
   )
 
 # Targets to which this target links.

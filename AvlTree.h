@@ -59,22 +59,22 @@ public:
     AVLTree& operator=(AVLTree &&other) noexcept;
     AVLTree& operator=(const AVLTree &other);
 
-     Iterator Begin();
-     Iterator End();
+     iterator begin();
+     iterator end();
 
-    bool Empty();
-    size_t Size();
+    bool empty();
+    size_t size();
 //    size_t Max_size();
 
-    void Clear();
-    std::pair<iterator, bool> Insert(const Key& key);
-    void Erase(iterator pos);
+    void clear();
+    std::pair<iterator, bool> insert(const Key& key);
+    void erase(iterator pos);
 
-    void Swap(AVLTree& other);
-    void Merge(AVLTree& other);
+    void swap(AVLTree& other);
+    void merge(AVLTree& other);
 
 
-    bool Contains(const Key& key);
+    bool contains(const Key& key);
 
     void PrintBinaryTree(); // ТОЖЕ удалить
 

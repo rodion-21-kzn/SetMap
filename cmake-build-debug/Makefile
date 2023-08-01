@@ -129,53 +129,29 @@ Containers/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/build
 .PHONY : Containers/fast
 
-Map.o: Map.cpp.o
-.PHONY : Map.o
+main.o: main.cpp.o
+.PHONY : main.o
 
 # target to build an object file
-Map.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/Map.cpp.o
-.PHONY : Map.cpp.o
+main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/main.cpp.o
+.PHONY : main.cpp.o
 
-Map.i: Map.cpp.i
-.PHONY : Map.i
-
-# target to preprocess a source file
-Map.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/Map.cpp.i
-.PHONY : Map.cpp.i
-
-Map.s: Map.cpp.s
-.PHONY : Map.s
-
-# target to generate assembly for a file
-Map.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/Map.cpp.s
-.PHONY : Map.cpp.s
-
-test.o: test.cpp.o
-.PHONY : test.o
-
-# target to build an object file
-test.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/test.cpp.o
-.PHONY : test.cpp.o
-
-test.i: test.cpp.i
-.PHONY : test.i
+main.i: main.cpp.i
+.PHONY : main.i
 
 # target to preprocess a source file
-test.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/test.cpp.i
-.PHONY : test.cpp.i
+main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/main.cpp.i
+.PHONY : main.cpp.i
 
-test.s: test.cpp.s
-.PHONY : test.s
+main.s: main.cpp.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-test.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/test.cpp.s
-.PHONY : test.cpp.s
+main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Containers.dir/build.make CMakeFiles/Containers.dir/main.cpp.s
+.PHONY : main.cpp.s
 
 # Help Target
 help:
@@ -186,12 +162,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... Containers"
-	@echo "... Map.o"
-	@echo "... Map.i"
-	@echo "... Map.s"
-	@echo "... test.o"
-	@echo "... test.i"
-	@echo "... test.s"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 .PHONY : help
 
 
