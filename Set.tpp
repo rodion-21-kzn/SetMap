@@ -27,5 +27,4 @@ namespace s21 {
         }
         return *this;
     }
-
 }

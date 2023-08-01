@@ -23,7 +23,6 @@ public:
     using const_iterator = ConstIterator;
     using size_type = size_t;
 
-
     class Iterator {
     public:
         Iterator();
@@ -34,9 +33,7 @@ public:
         iterator operator--(int);
         reference operator*();
         bool operator==(const iterator& it);
-
         friend class AVLTree<Key, Value>;
-
         bool operator!=(const iterator& it);
 
     protected:
@@ -45,8 +42,7 @@ public:
         Node* MoveForward(Node* node);
         Node* MoveBack(Node* node);
     };
-
-    class ConstIterator : Iterator {
+    class ConstIterator : public Iterator {
     public:
         ConstIterator() : Iterator(){};
         const_reference operator*() const {return Iterator::operator*();};
@@ -58,24 +54,17 @@ public:
     ~AVLTree();
     AVLTree& operator=(AVLTree &&other) noexcept;
     AVLTree& operator=(const AVLTree &other);
-
      iterator begin();
      iterator end();
-
     bool empty();
     size_t size();
 //    size_t Max_size();
-
     void clear();
     std::pair<iterator, bool> insert(const Key& key);
     void erase(iterator pos);
-
     void swap(AVLTree& other);
     void merge(AVLTree& other);
-
-
     bool contains(const Key& key);
-
     void PrintBinaryTree(); // ТОЖЕ удалить
 
 protected:
@@ -91,29 +80,23 @@ protected:
         int height_ = 0;
         friend class AVLTree<Key, Value>;
     };
-
     Node* root_;
     // SUPPORT FOR CONSTRUCTORS
     void FreeNode(Node* node);
     Node* CopyTree(Node* node, Node* parent);
-
     // PRINT
     void PrintTree(Node* root, const std::string& prefix, bool isLeft); // УДАЛИТЬ
-
     // AVL BALANCE
     void SwapValue(Node* a, Node* b); // swap only key and value
-
     void RightRotate(Node* node);
     void LeftRotate(Node* node);
     void Balance(Node* node);
     int GetBalance(Node* node);
     int GetHeight(Node* node);
     void SetHeight(Node* node);
-
     // MIN && MAX
     static Node* GetMin(Node* node);
     static Node* GetMax(Node* node);
-
     // RECURSIVE SUPPORT FUNCTIONS
     bool RecursiveInsert(Node* node, const Key& key, Value value);
     Node* RecursiveDelete(Node* node, Key key);

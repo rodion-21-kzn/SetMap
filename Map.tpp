@@ -15,7 +15,6 @@ namespace s21 {
         }
     }
 
-
     template<typename Key, typename T>
     map<Key, T> &map<Key, T>::operator=(map &&other) noexcept {
         if (this != &other) {
@@ -123,6 +122,21 @@ namespace s21 {
         MapIterator test(nullptr, last_node);
         return test;
     }
+
+    template<typename Key, typename T>
+    typename map<Key, T>::const_iterator map<Key, T>::cbegin() const {
+        return map<Key, T>::ConstMapIterator(AVLTree<Key, T>::GetMin(AVLTree<Key, T>::root_));
+    }
+
+    template<typename Key, typename T>
+    typename map<Key, T>::const_iterator map<Key, T>::cend() const{
+        if (AVLTree<Key, T>::root_ == nullptr) return cbegin();
+
+        typename AVLTree<Key, T>::Node* last_node = AVLTree<Key, T>::GetMax(AVLTree<Key, T>::root_);
+        ConstMapIterator test(nullptr, last_node);
+        return test;
+    }
+
 
     template<typename Key, typename T>
     void map<Key, T>::merge(map &other) {

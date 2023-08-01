@@ -8,7 +8,6 @@
 #include "AvlTree.h"
 namespace s21 {
 
-
     template<typename Key>
     class set : public AVLTree<Key, Key> {
     public:
@@ -22,20 +21,14 @@ namespace s21 {
         using size_type = size_t;
 
         set() : AVLTree<Key, Key>() {};
-
         set(std::initializer_list<value_type> const &items);
-
         set(const set &other) : AVLTree<Key, Key>(other) {};
-
         set(set &&other) noexcept: AVLTree<Key, Key>(std::move(other)) {};
-
         set &operator=(set &&other) noexcept;
-
         set &operator=(const set &other);
+        ~set() = default;
 
         iterator find(const Key &key) { return AVLTree<Key, Key>::Find(key); };
-
-        ~set() = default;
 
     };
 

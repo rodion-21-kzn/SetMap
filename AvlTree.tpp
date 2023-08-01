@@ -254,7 +254,7 @@ template<typename Key, typename Value>
 AVLTree<Key, Value>::Node::Node(Key key, value_type value)  : key_(key), value_(value) {}
 
 template<typename Key, typename Value>
-AVLTree<Key, Value>::Node::Node(Key key, value_type value, Node* node)   : key_(key), value_(value), parent_(node) {}
+AVLTree<Key, Value>::Node::Node(Key key, value_type value, Node* node) : key_(key), value_(value), parent_(node) {}
 
 // SUPPORT FOR AVL_TREE CONSTRUCTORS
 
