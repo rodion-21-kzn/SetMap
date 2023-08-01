@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/Containers.dir/Map.cpp.o"
   "CMakeFiles/Containers.dir/Map.cpp.o.d"
+  "CMakeFiles/Containers.dir/test.cpp.o"
+  "CMakeFiles/Containers.dir/test.cpp.o.d"
   "Containers"
   "Containers.pdb"
 )

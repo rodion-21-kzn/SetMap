@@ -29,15 +29,20 @@ public:
     Map& operator=(const Map &other);
     ~Map() = default;
 
-    class MapIterator : AVLTree<Key, T>::Iterator {
+    class MapIterator : public AVLTree<Key, T>::Iterator {
     public:
         MapIterator() : AVLTree<Key, T>::Iterator() {};
         MapIterator(typename AVLTree<Key, T>::Node* node, typename AVLTree<Key, T>::Node* past_node = nullptr) : AVLTree<Key, T>::Iterator(node, past_node = nullptr) {};
         value_type& operator*();
+        T& return_value();
     };
+
+    T& at(const Key& key);
+    T& operator[](const Key& key);
 
     std::pair<iterator, bool> Insert(const value_type& value);
     std::pair<iterator, bool> Insert(const Key& key, const T& obj);
+    std::pair<iterator, bool> Insert_or_assign(const Key& key, const T& obj);
 
 
     iterator Find(const Key& key);

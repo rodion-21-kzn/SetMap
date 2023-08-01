@@ -6,34 +6,7 @@
 
 #include <sys/types.h>
 #include <sys/sysctl.h>
-#include <initializer_list>
 
-//int main() {
-//
-//    std::set<int> const test = {1,2,3};
-//    std::set<int>::iterator it;
-//    it = test.begin();
-//    ++it;
-//    std::cout << *it;
-//    AVLTree<int, int> myTree({1,1}, {2,2});
-//    AVLTree<int,int>::Iterator it;
-//    AVLTree<int,int> test;
-//    test.Insert(1,1);
-//    test.Insert(2,2);
-//    test.Insert(3,3);
-//    test.Insert(11,11);
-//    test.Insert(21,21);
-//    test.Insert(-1,-1);
-//    test.Insert(13,13);
-//
-//    it = test.begin();
-//
-//    for(;it != test.end(); ++it) {
-//        std::cout << *it << std::endl;
-//    }
-//
-//    test.PrintBinaryTree();
-//}
 
 // КОНСТРУКТОРЫ ДЛЯ ДЕРЕВА / ДЕСТРУКТОР / ОПЕРАТОРЫ
 
@@ -255,7 +228,8 @@ typename AVLTree<Key, Value>::Iterator AVLTree<Key, Value>::Iterator::operator--
 template<typename Key, typename Value>
 Value& AVLTree<Key, Value>::Iterator::operator*() {
     if (iter_node_ == nullptr) {
-        return 0;
+        static Value fake_value{};
+        return fake_value;
     }
     return iter_node_->value_;
 }
@@ -277,10 +251,10 @@ bool AVLTree<Key, Value>::Iterator::operator!=(const AVLTree::Iterator &it) {
 // КОНСРУКТОР ДЛЯ УЗЛОВ
 
 template<typename Key, typename Value>
-AVLTree<Key, Value>::Node::Node(Key key, Value value)  : key_(key), value_(value) {}
+AVLTree<Key, Value>::Node::Node(Key key, value_type value)  : key_(key), value_(value) {}
 
 template<typename Key, typename Value>
-AVLTree<Key, Value>::Node::Node(Key key, Value value, Node* node)   : key_(key), value_(value), parent_(node) {}
+AVLTree<Key, Value>::Node::Node(Key key, value_type value, Node* node)   : key_(key), value_(value), parent_(node) {}
 
 // SUPPORT FOR AVL_TREE CONSTRUCTORS
 

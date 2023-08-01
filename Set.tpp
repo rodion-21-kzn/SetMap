@@ -4,14 +4,6 @@
 
 
 #include "Set.h"
-#include <list>
-#include <set>
-
-
-int main () {
-    Set<int> st = {1,2,3};
-    st.Find();
-}
 
 template<typename Key>
 Set<Key>::Set(const std::initializer_list<value_type> &items) {

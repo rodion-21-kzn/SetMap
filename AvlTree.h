@@ -7,7 +7,6 @@
 
 #include <iostream>
 
-
 template<typename Key, typename Value>
 class AVLTree {
 protected:
@@ -29,14 +28,16 @@ public:
     public:
         Iterator();
         Iterator(Node* node, Node* past_node = nullptr);
-        Iterator& operator++();
-        Iterator operator++(int);
-        Iterator& operator--();
-        Iterator operator--(int);
-        Value& operator*();
-        bool operator==(const Iterator& it);
-        bool operator!=(const Iterator& it);
+        iterator& operator++();
+        iterator operator++(int);
+        iterator& operator--();
+        iterator operator--(int);
+        reference operator*();
+        bool operator==(const iterator& it);
+
         friend class AVLTree<Key, Value>;
+
+        bool operator!=(const iterator& it);
 
     protected:
         Node* iter_node_; // посмотреть куда пихнуть. протектед или приват
@@ -48,7 +49,7 @@ public:
     class ConstIterator : Iterator {
     public:
         ConstIterator() : Iterator(){};
-        const Value& operator*() const {return Iterator::operator*();};
+        const_reference operator*() const {return Iterator::operator*();};
     };
 
     AVLTree();
@@ -80,10 +81,10 @@ public:
 protected:
     iterator Find(const Key& key);
     struct Node {
-        Node(Key key, Value value);
-        Node(Key key, Value value, Node* parent);
+        Node(Key key, value_type value);
+        Node(Key key, value_type value, Node* parent);
         Key key_;
-        Value value_;
+        value_type value_;
         Node* left_ = nullptr;
         Node* right_ = nullptr;
         Node* parent_ = nullptr;

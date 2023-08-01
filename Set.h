@@ -33,5 +33,5 @@ public:
 };
 
 
-
+#include "Set.tpp"
 #endif //CONTAINERS_SET_H
