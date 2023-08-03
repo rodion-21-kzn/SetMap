@@ -176,9 +176,3 @@ TEST(set, ContainsSet) {
     EXPECT_EQ(my_set.contains(2), orig_set.contains(2));
     EXPECT_EQ(my_set.contains(2.1), orig_set.contains(2.1));
 }
-
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}

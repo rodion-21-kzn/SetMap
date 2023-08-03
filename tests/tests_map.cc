@@ -235,9 +235,3 @@ TEST(map, MergeMap) {
     EXPECT_EQ(my_map_merge.contains(4), orig_map_merge.contains(4));
     EXPECT_EQ(my_map_merge.contains(3), orig_map_merge.contains(3));
 }
-
-
-int main(int argc, char** argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
