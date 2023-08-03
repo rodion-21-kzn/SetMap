@@ -84,7 +84,7 @@ namespace s21 {
     std::pair<typename map<Key, T>::iterator, bool> map<Key, T>::insert_or_assign(const Key &key, const T &obj) {
         auto it = find(key);
         if (it != this->end()) {
-            AVLTree<Key, T>::erase(it);
+            erase(it);
             auto pr = insert(key, obj);
             pr.second = false;
             return pr;
@@ -148,5 +148,11 @@ namespace s21 {
             std::pair<iterator, bool> pr = insert(key, obj);
             if (pr.second) other.erase(pr.first);
         }
+    }
+
+    template<typename Key, typename T>
+    void map<Key, T>::erase(map::iterator pos) {
+        if (AVLTree<Key, T>::root_ == nullptr || pos.iter_node_ == nullptr) return;
+        AVLTree<Key, T>::root_ = AVLTree<Key, T>::RecursiveDelete(AVLTree<Key, T>::root_, (*pos).first);
     }
 }

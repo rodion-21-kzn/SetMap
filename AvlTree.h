@@ -57,8 +57,8 @@ public:
      iterator begin();
      iterator end();
     bool empty();
-    size_t size();
-//    size_t Max_size();
+    size_type size();
+    size_type max_size();
     void clear();
     std::pair<iterator, bool> insert(const Key& key);
     void erase(iterator pos);

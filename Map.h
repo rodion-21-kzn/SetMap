@@ -61,7 +61,7 @@ namespace s21 {
         std::pair<iterator, bool> insert(const value_type &value);
         std::pair<iterator, bool> insert(const Key &key, const T &obj);
         std::pair<iterator, bool> insert_or_assign(const Key &key, const T &obj);
-
+        void erase(iterator pos);
     private:
         iterator find(const Key &key);
     };

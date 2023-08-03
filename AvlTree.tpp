@@ -77,17 +77,11 @@ size_t AVLTree<Key, Value>::size() {
     return RecursiveSize(root_);
 }
 
-//template<typename Key, typename Value>
-//size_t AVLTree<Key, Value>::Max_size() {
-//    int mib[] = {CTL_HW, HW_MEMSIZE};
-//    uint64_t physicalMemory;
-//    size_t length = sizeof(physicalMemory);
-//    if (sysctl(mib, 2, &physicalMemory, &length, nullptr, 0) != 0) {
-//        throw std::logic_error("no access to memory");
-//    }
-//    return std::numeric_limits<size_t>::max() / sizeof(Key)  ;
-////    return std::numeric_limits<std::size_t>::max() / (physicalMemory / (1024 * 1024 * 1024) / sizeof(Key));
-//}
+template<typename Key, typename Value>
+size_t AVLTree<Key, Value>::max_size() {
+    return std::numeric_limits<size_type>::max() /
+           sizeof(typename AVLTree<Key, Value>::Node);
+}
 
 
 // INSERT and DELETE and CLEAR
