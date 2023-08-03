@@ -36,5 +36,5 @@ namespace s21 {
 
 }
 
-#include "Set.tpp"
+#include "set.tpp"
 #endif //CONTAINERS_SET_H

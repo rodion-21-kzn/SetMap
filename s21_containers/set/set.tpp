@@ -3,7 +3,7 @@
 //
 
 
-#include "Set.h"
+#include "set.h"
 #include <vector>
 
 namespace s21 {

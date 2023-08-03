@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <set>
-#include "../s21_containers/Set/Set.h"
+#include "../s21_containers/Set/set.h"
 
 
 // SET

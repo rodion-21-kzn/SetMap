@@ -3,7 +3,7 @@
 //
 
 
-#include "Map.h"
+#include "map.h"
 
 
 namespace s21 {

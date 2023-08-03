@@ -5,7 +5,7 @@
 
 #include <gtest/gtest.h>
 #include <map>
-#include "../s21_containers/Map/Map.h"
+#include "../s21_containers/Map/map.h"
 
 // MAP
 

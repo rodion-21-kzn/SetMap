@@ -71,6 +71,6 @@ namespace s21 {
 
 }
 
-#include "Map.tpp"
+#include "map.tpp"
 
 #endif //CONTAINERS_MAP_H
