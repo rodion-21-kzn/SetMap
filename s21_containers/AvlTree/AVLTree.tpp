@@ -2,7 +2,7 @@
 // Created by Oznak Banshee on 7/14/23.
 //
 
-#include "AvlTree.h"
+#include "AVLTree.h"
 
 #include <sys/types.h>
 #include <sys/sysctl.h>

@@ -5,7 +5,7 @@
 #ifndef CONTAINERS_MAP_H
 #define CONTAINERS_MAP_H
 
-#include "../AvlTree/AvlTree.h"
+#include "../AvlTree/AVLTree.h"
 
 namespace s21 {
     template<typename Key, typename T>
