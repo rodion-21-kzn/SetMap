@@ -5,7 +5,7 @@
 #ifndef CONTAINERS_SET_H
 #define CONTAINERS_SET_H
 
-#include "AvlTree.h"
+#include "../AvlTree/AvlTree.h"
 namespace s21 {
 
     template<typename Key>
@@ -29,6 +29,8 @@ namespace s21 {
         ~set() = default;
 
         iterator find(const Key &key) { return AVLTree<Key, Key>::Find(key); };
+        template <class... Args>
+        std::vector<std::pair<iterator,bool>> insert_many(Args&&... args);
 
     };
 

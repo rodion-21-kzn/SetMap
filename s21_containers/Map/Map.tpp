@@ -93,6 +93,16 @@ namespace s21 {
     }
 
     template<typename Key, typename T>
+    template <class... Args>
+    std::vector<std::pair<typename map<Key, T>::iterator,bool>> map<Key, T>::insert_many(Args&&... args) {
+        std::vector<std::pair<typename map<Key, T>::iterator,bool>> vec;
+        for (const auto& arg : {args...}) {
+            vec.push_back(insert(arg));
+        }
+        return vec;
+    }
+
+    template<typename Key, typename T>
     T &map<Key, T>::at(const Key &key) {
         auto it = find(key);
         if (it == nullptr) throw std::out_of_range("Container does not have an element with the specified key");

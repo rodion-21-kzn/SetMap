@@ -65,7 +65,6 @@ public:
     void swap(AVLTree& other);
     void merge(AVLTree& other);
     bool contains(const Key& key);
-    void PrintBinaryTree(); // ТОЖЕ удалить
 
 protected:
     iterator Find(const Key& key);
@@ -84,8 +83,6 @@ protected:
     // SUPPORT FOR CONSTRUCTORS
     void FreeNode(Node* node);
     Node* CopyTree(Node* node, Node* parent);
-    // PRINT
-    void PrintTree(Node* root, const std::string& prefix, bool isLeft); // УДАЛИТЬ
     // AVL BALANCE
     void SwapValue(Node* a, Node* b); // swap only key and value
     void RightRotate(Node* node);

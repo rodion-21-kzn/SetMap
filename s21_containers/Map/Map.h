@@ -5,7 +5,7 @@
 #ifndef CONTAINERS_MAP_H
 #define CONTAINERS_MAP_H
 
-#include "AvlTree.h"
+#include "../AvlTree/AvlTree.h"
 
 namespace s21 {
     template<typename Key, typename T>
@@ -61,7 +61,10 @@ namespace s21 {
         std::pair<iterator, bool> insert(const value_type &value);
         std::pair<iterator, bool> insert(const Key &key, const T &obj);
         std::pair<iterator, bool> insert_or_assign(const Key &key, const T &obj);
+        template <class... Args>
+        std::vector<std::pair<iterator,bool>> insert_many(Args&&... args);
         void erase(iterator pos);
+
     private:
         iterator find(const Key &key);
     };

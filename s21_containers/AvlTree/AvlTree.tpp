@@ -360,29 +360,6 @@ void AVLTree<Key, Value>::Balance(Node *node) { // правила баланси
     }
 }
 
-// PRINTING
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::PrintBinaryTree() {
-    PrintTree(root_, "", false);
-}
-
-template<typename Key, typename Value>
-void AVLTree<Key, Value>::PrintTree(Node* node, const std::string& prefix, bool isLeft) {
-    if (node == nullptr) {
-        return;
-    }
-    std::cout << prefix;
-    std::cout << (isLeft ? "├──" : "└──");
-    std::cout << node->key_ << std::endl;
-
-    // Calculate the new prefix for child nodes
-    std::string childPrefix = prefix + (isLeft ? "│   " : "    ");
-
-    PrintTree(node->left_, childPrefix, true);
-    PrintTree(node->right_, childPrefix, false);
-}
-
 // MIN AND MAX IN TREE
 
 template<typename Key, typename Value>
